@@ -315,6 +315,2198 @@ button{cursor:pointer}
 .status-strip.player{border-left:3px solid var(--blue)}
 .status-strip.win{border-left:3px solid var(--green);color:var(--green);font-weight:600}
 
+/* RACE MODE BANNER */
+.race-banner{
+  margin-bottom:var(--s4);
+  padding:var(--s3) var(--s4);
+  background:linear-gradient(135deg, #FFF7E6 0%, #FFF1DD 100%);
+  border:1px solid var(--orange);
+  border-radius:var(--r-md);
+  display:flex;align-items:center;justify-content:space-between;gap:var(--s4);
+  animation:bubbleIn 220ms ease-out;
+}
+.race-banner[hidden]{display:none!important}
+.race-head{display:flex;flex-direction:column;gap:2px}
+.race-title{font-weight:700;color:var(--orange);font-size:var(--fs-md)}
+.race-sub{font-size:var(--fs-sm);color:var(--text-2)}
+.race-stats{display:flex;gap:var(--s3)}
+.race-stat{display:flex;flex-direction:column;align-items:center;min-width:56px;padding:4px 8px;border-radius:var(--r-sm);background:rgba(255,255,255,.7)}
+.race-stat .num{font-weight:700;font-size:var(--fs-xl);font-variant-numeric:tabular-nums;line-height:1}
+.race-stat .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--text-3);margin-top:2px}
+.race-stat.me .num{color:var(--blue)}
+.race-stat.cpu .num{color:var(--orange)}
+.race-stat.left .num{color:var(--text)}
+
+/* =========================================================
+   POČÍTAČ — bublina s přímou řečí
+   ========================================================= */
+.cpu-bubble{
+  display:none;
+  align-items:flex-start;gap:var(--s3);
+  margin-bottom:var(--s4);
+  padding:var(--s4) var(--s5);
+  background:var(--orange-50);
+  border:1px solid var(--orange);
+  border-radius:var(--r-md);
+  position:relative;
+  font-size:var(--fs-lg);
+  animation:bubbleIn 180ms ease-out;
+}
+.cpu-bubble.show{display:flex}
+.cpu-bubble::before{
+  content:'';
+  position:absolute;left:24px;top:-7px;
+  width:12px;height:12px;
+  background:var(--orange-50);
+  border-left:1px solid var(--orange);
+  border-top:1px solid var(--orange);
+  transform:rotate(45deg);
+}
+.cpu-avatar{
+  flex-shrink:0;
+  width:40px;height:40px;border-radius:50%;
+  background:var(--orange);color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:var(--fs-md);
+}
+.cpu-text{flex:1;color:var(--text);line-height:1.45}
+.cpu-text .who{display:block;font-size:var(--fs-sm);text-transform:uppercase;letter-spacing:.05em;color:var(--orange);font-weight:700;margin-bottom:4px}
+.cpu-text .say{font-style:italic;font-size:var(--fs-lg);font-weight:700}
+@keyframes bubbleIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+/* =========================================================
+   PYRAMIDA — hexagony, kategorie jako obsah
+   Velikost se ladí přes --hex (níže v media queries).
+   ========================================================= */
+.pyramid{
+  display:flex;flex-direction:column;align-items:center;
+  --hex:84px;
+}
+/* Řádky se vertikálně překrývají o 25 % výšky hexu — klasické hex-tiling.
+   Díky tomu má celá pyramida reálnou výšku ~ hex*1.155 + 6*hex*0.866,
+   ne 7*hex*1.155 jako u stackingu řádek-pod-řádek. */
+.row{display:flex;justify-content:center;gap:6px;margin-top:calc(var(--hex) * -0.289)}
+.row:first-child{margin-top:0}
+.hex{
+  width:var(--hex);
+  height:calc(var(--hex)*1.155);
+  clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);
+  background:var(--surface-alt);
+  border:0;padding:0;
+  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;
+  color:var(--text-2);
+  transition:filter var(--t),transform var(--t);
+  cursor:default;
+}
+.hex::before{
+  content:'';position:absolute;inset:1.5px;
+  clip-path:inherit;
+  background:#EEF2F7;
+  z-index:0;
+}
+.hex .cat{
+  position:relative;z-index:1;
+  font-weight:700;font-size:var(--fs-xl);
+  letter-spacing:.02em;
+  color:var(--text);
+}
+.hex .num{
+  position:relative;z-index:1;
+  font-size:10px;color:var(--text-3);
+  font-variant-numeric:tabular-nums;
+  margin-top:2px;
+  opacity:.7;
+}
+
+/* stavy polí */
+.hex.neutral::before{background:#EEF2F7}
+.hex.player::before{background:var(--blue)}
+.hex.player .cat,.hex.player .num{color:#fff}
+.hex.player-help::before{background:var(--teal)}
+.hex.player-help .cat,.hex.player-help .num{color:#fff}
+.hex.system::before{background:var(--orange)}
+.hex.system .cat,.hex.system .num{color:#fff}
+.hex.system-locked::before{background:var(--anthracite)}
+.hex.system-locked .cat,.hex.system-locked .num{color:rgba(255,255,255,.7)}
+
+.hex.clickable{cursor:pointer}
+.hex.clickable:hover{transform:translateY(-1px)}
+.hex.clickable:hover::before{filter:brightness(.97)}
+.hex.system.clickable:hover::before{filter:brightness(1.1)}
+.hex.system-locked.clickable{cursor:pointer}
+.hex.system-locked.clickable::after{
+  content:'?';position:absolute;top:6px;right:8px;
+  font-size:var(--fs-xs);font-weight:700;color:rgba(255,255,255,.9);
+  background:rgba(255,255,255,.15);border-radius:50%;
+  width:16px;height:16px;display:flex;align-items:center;justify-content:center;
+}
+.hex.system-locked.clickable:hover::before{filter:brightness(1.3)}
+.hex.targeted::before{animation:hexTarget 700ms ease-in-out infinite alternate}
+.hex.claiming{animation:hexClaim 650ms cubic-bezier(.34,1.56,.64,1)}
+@keyframes hexTarget{
+  from{box-shadow:0 0 0 0 rgba(232,134,27,0)}
+  to{box-shadow:0 0 0 6px rgba(232,134,27,.35)}
+}
+@keyframes hexClaim{
+  0%{transform:scale(1) rotate(0)}
+  35%{transform:scale(1.18) rotate(-8deg)}
+  65%{transform:scale(1.08) rotate(6deg)}
+  100%{transform:scale(1) rotate(0)}
+}
+
+.board-footer{
+  margin-top:var(--s5);
+  display:flex;flex-wrap:wrap;gap:var(--s4);justify-content:center;
+  font-size:var(--fs-sm);color:var(--text-3);
+}
+.swatch{display:inline-flex;align-items:center;gap:6px}
+.swatch::before{content:'';width:12px;height:12px;border-radius:3px;background:#EEF2F7;border:1px solid var(--border-strong)}
+.swatch.p::before{background:var(--blue);border-color:transparent}
+.swatch.ph::before{background:var(--teal);border-color:transparent}
+.swatch.s::before{background:var(--orange);border-color:transparent}
+.swatch.sl::before{background:var(--anthracite);border-color:transparent}
+
+/* =========================================================
+   MODAL — širší, nižší, optimalizováno pro iPad
+   Velikost se ladí přes .modal max-width.
+   ========================================================= */
+.backdrop{
+  position:fixed;inset:0;z-index:100;
+  background:rgba(15,25,42,.55);
+  display:none;
+  align-items:center;justify-content:center;
+  padding:var(--s4);
+}
+.backdrop.open{display:flex}
+.modal{
+  width:100%;
+  max-width:720px;
+  background:var(--surface);
+  border-radius:var(--r-lg);
+  box-shadow:var(--shadow-md);
+  display:flex;flex-direction:column;
+  max-height:calc(100vh - 32px);
+  overflow:hidden;
+}
+.modal-head{
+  padding:var(--s4) var(--s6) var(--s3);
+  border-bottom:1px solid var(--border);
+}
+.modal-meta{
+  display:flex;align-items:center;gap:var(--s3);
+  color:var(--text-2);font-size:var(--fs-sm);
+}
+.modal-meta .cat-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:3px 10px;border-radius:999px;
+  background:var(--blue-50);color:var(--blue-600);
+  font-weight:600;font-size:var(--fs-xs);
+}
+.modal-meta .qnum{margin-left:auto;font-variant-numeric:tabular-nums;color:var(--text-3)}
+
+.timer{margin-top:var(--s3)}
+.timer-row{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px}
+.timer-row .lbl{font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.05em;color:var(--text-3)}
+.timer-row .num{font-weight:700;font-size:var(--fs-lg);font-variant-numeric:tabular-nums}
+.timer-track{height:6px;background:var(--surface-alt);border:1px solid var(--border);border-radius:999px;overflow:hidden}
+.timer-bar{height:100%;width:100%;background:var(--blue)}
+.modal.danger .timer-bar{background:var(--danger)}
+.modal.danger .timer-row .num{color:var(--danger)}
+
+.modal-body{padding:var(--s5) var(--s6);overflow-y:auto}
+.q-text{
+  font-size:var(--fs-xl);font-weight:500;color:var(--text);
+  line-height:1.35;margin-bottom:var(--s5);
+}
+.q-input{
+  width:100%;
+  padding:14px 16px;
+  font-size:var(--fs-lg);
+  border:1.5px solid var(--border-strong);
+  border-radius:var(--r-md);
+  background:var(--surface);
+  min-height:52px;
+}
+.q-input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(40,112,237,.15)}
+
+.help-list{display:flex;flex-direction:column;gap:8px}
+.help-opt{
+  display:flex;align-items:center;gap:var(--s3);
+  padding:14px 16px;
+  border:1.5px solid var(--border-strong);
+  border-radius:var(--r-md);
+  background:var(--surface);
+  text-align:left;
+  font-size:var(--fs-md);
+  min-height:52px;
+  transition:border-color var(--t),background var(--t);
+}
+.help-opt:hover{border-color:var(--blue);background:var(--blue-50)}
+.help-letter{
+  width:28px;height:28px;border-radius:6px;
+  background:var(--blue-50);color:var(--blue-600);
+  display:inline-flex;align-items:center;justify-content:center;
+  font-weight:700;flex-shrink:0;
+}
+
+.help-hint{
+  display:flex;align-items:center;justify-content:space-between;gap:var(--s3);
+  margin-top:var(--s4);
+  padding:10px var(--s3);
+  background:var(--surface-alt);
+  border:1px solid var(--border);
+  border-radius:var(--r-sm);
+  font-size:var(--fs-sm);color:var(--text-2);
+}
+
+.feedback{display:none;margin-top:var(--s4);padding:10px var(--s3);border-radius:var(--r-sm);font-weight:600;font-size:var(--fs-md)}
+.feedback.show{display:block}
+.feedback.correct{background:var(--green-50);color:#066B26}
+.feedback.helped{background:var(--teal-50);color:#01757A}
+.feedback.wrong{background:#FDECE7;color:#A23A28}
+.feedback.timeout{background:#FBF2DA;color:#7A570F}
+.feedback small{display:block;font-weight:400;opacity:.9;margin-top:2px}
+
+.modal-foot{
+  padding:var(--s4) var(--s6);
+  border-top:1px solid var(--border);
+  display:flex;gap:var(--s3);justify-content:flex-end;align-items:center;
+}
+.modal-foot .spacer{flex:1;font-size:var(--fs-sm);color:var(--text-3)}
+
+.demo-hint{
+  margin-top:var(--s3);padding:8px 10px;
+  background:#FFF8E1;border:1px dashed #D9B85F;
+  border-radius:var(--r-sm);
+  font-size:var(--fs-sm);color:#6E4E0F;
+}
+
+/* =========================================================
+   FINÁLE — čisté, jednoduché
+   ========================================================= */
+.final{max-width:760px;margin:0 auto;padding:var(--s7) 0}
+.final-head{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:var(--s6);
+  text-align:center;
+}
+.final-head h2{margin-bottom:6px}
+.final-head p{color:var(--text-2)}
+.celebrate-mark{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:56px;height:56px;border-radius:50%;
+  background:var(--green-50);color:var(--green);
+  font-size:30px;font-weight:700;line-height:1;
+  margin-bottom:var(--s4);
+}
+.celebrate-stats{
+  display:flex;justify-content:center;gap:var(--s5);flex-wrap:wrap;
+  margin:var(--s5) 0;
+  padding:var(--s4);
+  background:var(--surface-alt);
+  border:1px solid var(--border);
+  border-radius:var(--r-md);
+}
+.celebrate-stats .cs{display:flex;flex-direction:column;align-items:center;gap:2px}
+.celebrate-stats .cs .num{font-size:var(--fs-2xl);font-weight:700;color:var(--blue-600);font-variant-numeric:tabular-nums;line-height:1}
+.celebrate-stats .cs .lbl{font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.05em;color:var(--text-3)}
+.celebrate-rules{margin:var(--s4) 0 var(--s5);color:var(--text-2)}
+.final-progress{
+  display:flex;justify-content:center;gap:8px;margin-top:var(--s5);
+}
+.final-dot{
+  width:32px;height:6px;border-radius:3px;background:var(--border-strong);
+}
+.final-dot.current{background:var(--blue)}
+.final-dot.correct{background:var(--green)}
+.final-dot.wrong{background:var(--danger)}
+.final-meta{margin-top:var(--s3);color:var(--text-3);font-size:var(--fs-sm)}
+
+/* =========================================================
+   RESULT
+   ========================================================= */
+.result{max-width:720px;margin:0 auto;padding:var(--s7) 0}
+.result-head{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:var(--s6);
+  text-align:center;margin-bottom:var(--s4);
+}
+.result-head .verdict{
+  display:inline-block;padding:3px 10px;border-radius:999px;
+  background:var(--surface-alt);border:1px solid var(--border);
+  font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.06em;
+  color:var(--text-3);margin-bottom:var(--s3);
+}
+.result-head.win .verdict{background:var(--green-50);color:#066B26;border-color:transparent}
+.result-head.loss .verdict{background:var(--surface-alt);color:var(--text-2)}
+.result-head h2{margin-bottom:6px}
+.result-stats{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s2);
+  margin-bottom:var(--s4);
+}
+.stat{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:var(--s4);text-align:center;
+}
+.stat .num{font-size:var(--fs-2xl);font-weight:700;font-variant-numeric:tabular-nums;line-height:1}
+.stat .lbl{font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.05em;color:var(--text-3);margin-top:4px}
+.result-summary{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-md);padding:var(--s5);
+  font-size:var(--fs-md);color:var(--text-2);margin-bottom:var(--s5);
+}
+.result-cta{display:flex;gap:var(--s3);justify-content:center}
+
+/* =========================================================
+   TOAST — minimal
+   ========================================================= */
+.toasts{position:fixed;bottom:var(--s6);right:var(--s6);z-index:200;display:flex;flex-direction:column;gap:8px}
+
+/* RULES RECAP */
+.recap-overlay{
+  position:fixed;inset:0;z-index:250;
+  background:rgba(15,23,42,.45);
+  display:flex;align-items:center;justify-content:center;
+  padding:var(--s5);
+}
+.recap-overlay[hidden]{display:none!important}
+.recap-card{
+  background:var(--surface);
+  border-radius:var(--r-lg);
+  max-width:640px;width:100%;
+  padding:var(--s6) var(--s6) var(--s5);
+  box-shadow:0 20px 60px rgba(15,23,42,.25);
+  animation:recapCardIn 220ms cubic-bezier(.34,1.4,.64,1);
+}
+@keyframes recapCardIn{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:none}}
+.recap-card h2{margin:0 0 var(--s2);font-size:var(--fs-2xl);color:var(--text)}
+.recap-sub{margin:0 0 var(--s4);color:var(--text-2);font-size:var(--fs-md)}
+.recap-list{list-style:none;padding:0;margin:0 0 var(--s5);display:flex;flex-direction:column;gap:var(--s2)}
+.recap-list li{
+  padding:var(--s3) var(--s4);
+  background:var(--bg);
+  border-left:4px solid var(--blue);
+  border-radius:var(--r-sm);
+  font-size:var(--fs-md);line-height:1.5;color:var(--text);
+  opacity:0;transform:translateX(-24px);
+  transition:opacity 350ms ease, transform 350ms cubic-bezier(.34,1.2,.64,1);
+}
+.recap-list li:nth-child(2){border-left-color:var(--teal)}
+.recap-list li:nth-child(3){border-left-color:var(--green)}
+.recap-list li:nth-child(4){border-left-color:var(--blue)}
+.recap-list li:nth-child(5){border-left-color:var(--teal)}
+.recap-list li:nth-child(6){border-left-color:var(--green)}
+.recap-list li:nth-child(7){border-left-color:var(--orange)}
+.recap-list li:nth-child(8){border-left-color:var(--blue)}
+.recap-list li.visible{opacity:1;transform:none}
+.recap-list li b{font-weight:700}
+.recap-list li:nth-child(1) b{color:var(--blue)}
+.recap-list li:nth-child(2) b{color:var(--teal)}
+.recap-list li:nth-child(3) b{color:var(--green)}
+.recap-list li:nth-child(4) b{color:var(--blue)}
+.recap-list li:nth-child(5) b{color:var(--teal)}
+.recap-list li:nth-child(6) b{color:var(--green)}
+.recap-list li:nth-child(7) b{color:var(--orange)}
+.recap-list li:nth-child(8) b{color:var(--blue)}
+.recap-actions{display:flex;justify-content:flex-end;gap:var(--s3);opacity:0;transition:opacity 300ms ease}
+.recap-actions.visible{opacity:1}
+.toast{
+  background:var(--surface);border:1px solid var(--border);
+  border-left:3px solid var(--blue);
+  border-radius:var(--r-sm);box-shadow:var(--shadow-sm);
+  padding:10px 14px;font-size:var(--fs-sm);min-width:200px;
+}
+.toast.success{border-left-color:var(--green)}
+.toast.warning{border-left-color:var(--warning)}
+.toast.fading{opacity:0;transition:opacity var(--t)}
+
+/* =========================================================
+   RESPONSIVE — iPad priorita
+   iPad Pro 11" landscape ~1194px, 13" ~1366px.
+   Portrait ~834-1024px.
+   ========================================================= */
+
+/* iPad Pro 13" landscape */
+@media (min-width: 1180px){
+  .pyramid{--hex:92px}
+  .row{gap:8px}
+}
+
+/* iPad Pro 11" landscape (a velký tablet) */
+@media (min-width: 1024px) and (max-width: 1179px){
+  .pyramid{--hex:78px}
+}
+
+/* Landscape s nízkou výškou (iPad 11" 834px) — zkompaktníme chrome,
+   aby se vše vešlo bez scrollu. */
+@media (min-width: 1024px) and (max-height: 900px){
+  .shell{padding:var(--s4) var(--s6)}
+  .board-wrap{padding:var(--s4) var(--s4)}
+  .status-strip{margin-bottom:var(--s3);min-height:42px;padding:var(--s2) var(--s4)}
+  .board-footer{margin-top:var(--s3)}
+  .pyramid{--hex:76px}
+}
+
+/* iPad portrait — panel nad pyramidou */
+@media (max-width: 1023px){
+  .game{grid-template-columns:1fr}
+  .panel{position:static;flex-direction:row;flex-wrap:wrap;gap:var(--s4)}
+  .panel > *{flex:1;min-width:160px}
+  .panel hr{display:none}
+  .pyramid{--hex:76px}
+}
+
+/* malé tablety / velké telefony */
+@media (max-width: 720px){
+  .shell{padding:var(--s4)}
+  .intro{padding-top:var(--s5)}
+  .mode-row{grid-template-columns:1fr}
+  .pyramid{--hex:54px;gap:6px}
+  .row{gap:6px}
+  .modal{max-width:100%}
+  .modal-body{padding:var(--s4)}
+  .modal-head{padding:var(--s4)}
+  .modal-foot{padding:var(--s4)}
+  .result-stats{grid-template-columns:repeat(2,1fr)}
+}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-in">
+    <span class="brand">
+      <span class="brand-mark" aria-hidden="true">F</span>
+      FLEXI Kvíz <span class="brand-sub">· interní learning tool</span>
+    </span>
+    <span class="topbar-meta">Životní pojištění</span>
+  </div>
+</header>
+
+<main class="shell" id="app">
+
+<!-- INTRO -->
+<section class="screen active" id="screen-intro">
+  <div class="intro">
+    <h1>FLEXI Kvíz</h1>
+    <p class="lead">Krátká hra pro upevnění znalostí životního pojištění FLEXI. Odpovídejte na otázky z 5 kategorií, obsazujte pole a propojte tři strany pyramidy.</p>
+
+    <div class="continue-row" id="continue-row">
+      <p><strong>Máte rozehranou hru.</strong> Můžete pokračovat tam, kde jste skončili.</p>
+      <button class="btn btn-primary btn-sm" id="btn-continue">Pokračovat</button>
+      <button class="btn btn-ghost btn-sm" id="btn-discard">Začít znovu</button>
+    </div>
+
+      <div class="intro-section">
+        <h3>Režim hry</h3>
+        <div class="mode-row">
+          <button class="mode-btn primary" data-mode="vs">
+            <strong>Hra proti počítači</strong>
+            <span>Hrajete proti soupeři. Obsazujte pole, blokujte jeho trasy a propojte všechny tři strany pyramidy.</span>
+          </button>
+          <button class="mode-btn secondary" data-mode="solo">
+            <strong>Trénink</strong>
+            <span>Hrajete sami, bez soupeře. Klidné tempo na učení.</span>
+          </button>
+        </div>
+      </div>
+
+    <div class="intro-section">
+      <h3>Obtížnost</h3>
+      <div class="diff-row" role="radiogroup" aria-label="Obtížnost">
+        <label class="diff-opt">
+          <input type="radio" name="difficulty" value="25" />
+          <strong>Lehká</strong><span>25 s na otázku</span>
+        </label>
+        <label class="diff-opt">
+          <input type="radio" name="difficulty" value="20" checked />
+          <strong>Střední</strong><span>20 s na otázku</span>
+        </label>
+        <label class="diff-opt">
+          <input type="radio" name="difficulty" value="15" />
+          <strong>Těžká</strong><span>15 s na otázku</span>
+        </label>
+      </div>
+      <div style="margin-top:var(--s4)">
+        <label class="toggle"><input type="checkbox" id="demo-toggle"> Demo režim — 5s časovač + zobrazí správnou odpověď</label>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- GAME -->
+<section class="screen" id="screen-game">
+  <h2 class="vh">Hrací plocha</h2>
+  <div class="game">
+
+    <aside class="panel" aria-label="Stav hry">
+      <div class="panel-row"><span class="k">Režim</span><span class="v" id="p-mode">Trénink</span></div>
+      <div class="panel-row turn-timer" id="panel-timer-row">
+        <span class="k" id="p-timer-label">Tah</span>
+        <span class="v" id="p-timer">—</span>
+      </div>
+      <div class="turn-timer-track"><div class="turn-timer-bar" id="p-timer-bar"></div></div>
+
+      <hr />
+
+      <div>
+        <div class="panel-title">Skóre</div>
+        <div class="score-large">
+          <span class="num" id="p-score">0</span>
+          <span class="lbl">bodů</span>
+        </div>
+      </div>
+
+      <div class="mini-stats" aria-live="polite">
+        <div class="cell"><div class="num" id="p-correct">0</div><div class="lbl">Bez nápovědy</div></div>
+        <div class="cell"><div class="num" id="p-helped">0</div><div class="lbl">S nápovědou</div></div>
+      </div>
+
+      <hr />
+
+      <div>
+        <div class="panel-title">Propojení stran</div>
+        <div class="sides">
+          <div class="side" id="side-left"><span class="dot"></span><span>Levá strana</span></div>
+          <div class="side" id="side-right"><span class="dot"></span><span>Pravá strana</span></div>
+          <div class="side" id="side-bottom"><span class="dot"></span><span>Spodní strana</span></div>
+        </div>
+      </div>
+
+      <hr />
+
+      <div>
+        <div class="panel-title">Kategorie</div>
+        <div class="legend-mini">
+          <span><i class="S"></i>S · Smrt</span>
+          <span><i class="I"></i>I · Invalidita</span>
+          <span><i class="VO"></i>VO · Vážná onem.</span>
+          <span><i class="TN"></i>TN · Trvalé nás.</span>
+          <span><i class="PN"></i>PN · Prac. nesch.</span>
+        </div>
+      </div>
+
+      <hr />
+
+      <div class="panel-actions">
+        <button class="btn btn-subtle btn-sm" id="btn-back">Zpět na úvod</button>
+        <button class="btn btn-danger btn-sm" id="btn-restart">Restart</button>
+      </div>
+    </aside>
+
+    <div>
+      <div class="status-strip player" id="status-strip">
+        <span class="who" id="status-who">Jste na tahu</span>
+        <span class="what" id="status-what">Klikněte na volné pole.</span>
+      </div>
+
+      <div class="race-banner" id="race-banner" role="status" aria-live="polite" hidden>
+        <div class="race-head">
+          <span class="race-title">⚡ Souboj o pole</span>
+          <span class="race-sub">Propojení už není možné — kdo získá víc polí, vyhraje.</span>
+        </div>
+        <div class="race-stats">
+          <div class="race-stat me"><span class="num" id="race-me">0</span><span class="lbl">Vy</span></div>
+          <div class="race-stat cpu"><span class="num" id="race-cpu">0</span><span class="lbl">Počítač</span></div>
+          <div class="race-stat left"><span class="num" id="race-open">0</span><span class="lbl">Zbývá polí</span></div>
+        </div>
+      </div>
+
+      <div class="cpu-bubble" id="cpu-bubble" role="status" aria-live="polite">
+        <span class="cpu-avatar" aria-hidden="true">PC</span>
+        <span class="cpu-text">
+          <span class="who">Počítač</span>
+          <span class="say" id="cpu-say">…</span>
+        </span>
+      </div>
+
+      <div class="board-wrap">
+        <div class="pyramid" id="pyramid" role="grid" aria-label="Pyramida"></div>
+        <div class="board-footer">
+          <span class="swatch">Volné</span>
+          <span class="swatch p">Vaše</span>
+          <span class="swatch ph">S nápovědou</span>
+          <span class="swatch s">Počítače</span>
+          <span class="swatch sl">Zablokované</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FINÁLE -->
+<section class="screen" id="screen-final">
+  <div class="final">
+    <div class="final-head" id="final-head">
+      <!-- 1) Celebration intro (zobrazí se po propojení pyramidy) -->
+      <div id="final-celebrate">
+        <span class="celebrate-mark" aria-hidden="true">✓</span>
+        <h2>Skvělé — propojili jste pyramidu!</h2>
+        <p id="celebrate-summary">Solidní výkon. Teď vás čeká finále.</p>
+        <div class="celebrate-stats" id="celebrate-stats"></div>
+        <p class="celebrate-rules">
+          Finále má <strong>5 těžkých otázek</strong> bez nápovědy.
+          K vítězství stačí odpovědět správně alespoň <strong>3 z 5</strong>.
+        </p>
+        <button class="btn btn-primary btn-lg" id="btn-start-final">Pokračovat do finále</button>
+      </div>
+
+      <!-- 2) Průběh finále (zobrazí se po kliknutí na Pokračovat) -->
+      <div id="final-running" hidden>
+        <h2>Finále</h2>
+        <p>5 těžkých otázek bez nápovědy. Pro výhru potřebujete 3 správné.</p>
+        <div class="final-progress" id="final-progress"></div>
+        <div class="final-meta" id="final-meta">Otázka 1 / 5 · 45 s · 0 správně</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESULT -->
+<section class="screen" id="screen-result">
+  <div class="result">
+    <div class="result-head" id="result-head">
+      <span class="verdict" id="result-verdict">Výsledek</span>
+      <h2 id="result-title">Konec hry</h2>
+      <p id="result-text">Shrnutí výkonu.</p>
+    </div>
+    <div class="result-stats">
+      <div class="stat"><div class="num" id="r-score">0</div><div class="lbl">Skóre</div></div>
+      <div class="stat"><div class="num" id="r-acc">0%</div><div class="lbl">Úspěšnost</div></div>
+      <div class="stat"><div class="num" id="r-helped">0</div><div class="lbl">S nápovědou</div></div>
+      <div class="stat"><div class="num" id="r-wrong">0</div><div class="lbl">Chyby</div></div>
+    </div>
+    <div class="result-summary" id="result-summary">Shrnutí…</div>
+    <div class="result-cta">
+      <button class="btn btn-primary btn-lg" id="btn-play-again">Hrát znovu</button>
+      <button class="btn btn-ghost btn-lg" id="btn-home">Zpět na úvod</button>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- MODAL -->
+<div class="backdrop" id="backdrop">
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="q-text">
+    <div class="modal-head">
+      <div class="modal-meta">
+        <span class="cat-tag" id="m-cat">S · Smrt</span>
+        <span id="m-level">Běžná</span>
+        <span class="qnum" id="m-qnum">Otázka #1</span>
+      </div>
+      <div class="timer">
+        <div class="timer-row">
+          <span class="lbl">Zbývá času</span>
+          <span class="num" id="timer-num">20s</span>
+        </div>
+        <div class="timer-track"><div class="timer-bar" id="timer-bar"></div></div>
+      </div>
+    </div>
+
+    <div class="modal-body">
+      <div class="q-text" id="q-text">Otázka…</div>
+
+      <div id="input-wrap">
+        <input type="text" class="q-input" id="q-input" placeholder="Vaše odpověď…" autocomplete="off" inputmode="text" />
+      </div>
+
+      <div class="help-list" id="help-wrap" hidden></div>
+
+      <div class="help-hint" id="help-hint">
+        <span>Záchranná brzda — 3 možnosti, ale jen 1 bod.</span>
+        <button class="btn btn-ghost btn-sm" id="btn-help">Nápověda</button>
+      </div>
+
+      <div class="feedback" id="feedback" role="status" aria-live="polite"></div>
+      <div class="demo-hint" id="demo-hint" hidden></div>
+    </div>
+
+    <div class="modal-foot">
+      <span class="spacer" id="m-hint">Stiskněte Enter pro odeslání.</span>
+      <button class="btn btn-subtle" id="btn-cancel" type="button">Zrušit</button>
+      <button class="btn btn-subtle" id="btn-correct" type="button" hidden>Opravit odpověď</button>
+      <button class="btn btn-primary" id="btn-submit" type="button">Odpovědět</button>
+    </div>
+  </div>
+</div>
+
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<!-- RULES RECAP OVERLAY -->
+<div class="recap-overlay" id="recap-overlay" role="dialog" aria-modal="true" aria-labelledby="recap-title" hidden>
+  <div class="recap-card">
+    <h2 id="recap-title">Rychlá rekapitulace pravidel</h2>
+    <p class="recap-sub" id="recap-sub">Hra proti počítači · Střední (20 s)</p>
+    <ul class="recap-list">
+      <li><b>Volba pole:</b> <span id="recap-sel">12 s na výběr volného pole — jinak tah přejde na počítače.</span></li>
+      <li><b>Odpověď na otázku:</b> <span id="recap-ans">limit dle obtížnosti</span>.</li>
+      <li><b>Cíl:</b> propojit svými poli všechny <b>tři strany</b> pyramidy a postoupit do finále.</li>
+      <li><b>Nápověda A/B/C:</b> kdykoli můžete použít — pole získáte za <b>1 bod</b> místo 2.</li>
+      <li><b>Oprava odpovědi:</b> u textové odpovědi máte <b>jednu rychlou opravu</b> v rámci limitu.</li>
+      <li><b>Zablokovaná pole:</b> černá pole můžete získat zpět <b>náhradní otázkou</b> (A/B/C).</li>
+      <li id="recap-vs-li"><b>Souboj o černá pole:</b> pole, která nikdo neuhádl (černá), lze zachránit — stačí uhádnout náhradní otázku A/B/C. Oranžová pole počítače převzít nelze.</li>
+      <li><b>Finále:</b> 5 těžkých otázek bez nápovědy — stačí <b>3 správně</b>.</li>
+      <li><b>Když propojení nejde:</b> hra přepne do <b>Souboje o pole</b> — vyhraje ten, kdo má víc obsazených polí.</li>
+    </ul>
+    <div class="recap-actions">
+      <button class="btn btn-subtle" id="recap-back" type="button">Zpět</button>
+      <button class="btn btn-primary" id="recap-start" type="button">Spustit hru</button>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+/* =========================================================
+   CONFIG
+   ========================================================= */
+const CONFIG = {
+  timerDemo: 5,
+  finaleTimer: 45,
+  pointsCorrect: 2,
+  pointsHelp: 1,
+  finalQuestionCount: 5,
+  finalRequiredWins: 3,
+  systemAccuracy: 0.78,
+  systemIrrationalRate: 0.04,
+  selectionTimeout: 12
+};
+
+const CAT_NAMES = {S:'Smrt', I:'Invalidita', VO:'Vážná onemocnění', TN:'Trvalé následky', PN:'Pracovní neschopnost'};
+const CATEGORIES = ['S','I','VO','TN','PN'];
+
+/* =========================================================
+   QUESTION BANK (50 položek, beze změny)
+   ========================================================= */
+const QUESTION_BANK = [
+  { id: 1, kategorie: "S", uroven: "bezna", text: "Pevná pojistná částka u základního pojištění pro případ smrti (v Kč)?", spravna_odpoved: "10000", acceptedAnswers: ["10000", "10 000", "10000 kč", "10 000 kč"], distractors: ["5000", "15000"] },
+  { id: 2, kategorie: "S", uroven: "bezna", text: "Záloha v % z pojistné částky při terminálním stadiu onemocnění?", spravna_odpoved: "60", acceptedAnswers: ["60", "60 %"], distractors: ["50", "70"] },
+  { id: 3, kategorie: "S", uroven: "bezna", text: "Do kolika měsíců po smrti hlavního pojištěného mohou ostatní osoby uzavřít novou smlouvu bez zkoumání zdravotního stavu?", spravna_odpoved: "6", acceptedAnswers: ["6", "6 měsíců", "6 mesicu"], distractors: ["3", "12"] },
+  { id: 4, kategorie: "S", uroven: "bezna", text: "Lhůta v letech, do kdy po úrazu musí nastat smrt, aby bylo plněno ze smrti následkem úrazu?", spravna_odpoved: "3", acceptedAnswers: ["3", "3 roky", "3 let"], distractors: ["2", "5"] },
+  { id: 5, kategorie: "S", uroven: "bezna", text: "Čekací doba v měsících pro pojištění smrti (kromě sebevraždy a smrti úrazem)?", spravna_odpoved: "2", acceptedAnswers: ["2", "2 měsíce", "2 mesice"], distractors: ["1", "3"] },
+  { id: 6, kategorie: "S", uroven: "tezka", text: "Čekací doba na plnění v případě sebevraždy (v letech)?", spravna_odpoved: "1", acceptedAnswers: ["1", "1 rok"], distractors: ["2", "3"] },
+  { id: 7, kategorie: "S", uroven: "bezna", text: "Maximální výstupní věk pro pojištění pro případ smrti (v letech)?", spravna_odpoved: "90", acceptedAnswers: ["90"], distractors: ["85", "95"] },
+  { id: 8, kategorie: "S", uroven: "bezna", text: "Minimální vstupní věk pojistníka pro sjednání smlouvy (v letech)?", spravna_odpoved: "18", acceptedAnswers: ["18"], distractors: ["15", "21"] },
+  { id: 9, kategorie: "S", uroven: "tezka", text: "Může se u rizika pojištění smrti uplatnit opce na navýšení bez zkoumání zdravotního stavu po narození dítěte. O kolik max tisíc Kč?", spravna_odpoved: "500", acceptedAnswers: ["500", "500 tisíc", "500 tisic", "500000", "500 000"], distractors: ["300", "1000"] },
+  { id: 10, kategorie: "S", uroven: "tezka", text: "Kolikanásobek pojistné částky (max 1 mil. Kč) se vyplácí při smrti následkem dopravní nehody?", spravna_odpoved: "2", acceptedAnswers: ["2", "2x"], distractors: ["1", "3"] },
+  { id: 11, kategorie: "I", uroven: "bezna", text: "Jak dlouhá je čekací doba (v měsících) u invalidity následkem nemoci?", spravna_odpoved: "0", acceptedAnswers: ["0", "0 měsíců", "bez čekací doby"], distractors: ["1", "2"] },
+  { id: 12, kategorie: "I", uroven: "tezka", text: "Jaký je limit (v mil. Kč) pro využití maximální slevy 30 % za komplexní rozsah?", spravna_odpoved: "5", acceptedAnswers: ["5", "5 mil", "5 mil.", "5000000", "5 000 000"], distractors: ["3", "10"] },
+  { id: 13, kategorie: "I", uroven: "tezka", text: "V případě uznání snížené soběstačnosti pojišťovna plní, pokud je přiznán stupeň závislosti roven a vyšší než?", spravna_odpoved: "2", acceptedAnswers: ["2"], distractors: ["1", "3"] },
+  { id: 14, kategorie: "I", uroven: "tezka", text: "Do kolika měsíců po sobě musí nastat souběh invalidity 3. stupně a snížené soběstačnosti pro výplatu další pojistné částky?", spravna_odpoved: "12", acceptedAnswers: ["12", "12 měsíců", "12 mesicu"], distractors: ["6", "24"] },
+  { id: 15, kategorie: "I", uroven: "bezna", text: "Od jakého věku (v letech) lze sjednat invaliditu 1. a 2. stupně následkem úrazu nebo nemoci?", spravna_odpoved: "15", acceptedAnswers: ["15"], distractors: ["12", "18"] },
+  { id: 16, kategorie: "I", uroven: "bezna", text: "Jaká je maximální pojistná částka (v mil. Kč) u dospělého pro invaliditu 3. stupně?", spravna_odpoved: "25", acceptedAnswers: ["25", "25 mil", "25 mil.", "25000000", "25 000 000"], distractors: ["20", "30"] },
+  { id: 17, kategorie: "I", uroven: "bezna", text: "Jak vysoká je sleva (v %) na pojištění úvěru v balíčku?", spravna_odpoved: "20", acceptedAnswers: ["20", "20 %"], distractors: ["10", "30"] },
+  { id: 18, kategorie: "I", uroven: "tezka", text: "Klesající varianty pojistné částky se do limitu pro komplexní slevu započítávají kolika procenty?", spravna_odpoved: "50", acceptedAnswers: ["50", "50 %"], distractors: ["25", "100"] },
+  { id: 19, kategorie: "I", uroven: "tezka", text: "Kolikátý stupeň invalidity odpovídá ztrátě zraku jednoho oka a závažnější poruše druhého oka?", spravna_odpoved: "1", acceptedAnswers: ["1"], distractors: ["2", "3"] },
+  { id: 20, kategorie: "I", uroven: "tezka", text: "Kolikátý stupeň invalidity odpovídá úplné hluchotě?", spravna_odpoved: "2", acceptedAnswers: ["2"], distractors: ["1", "3"] },
+  { id: 21, kategorie: "VO", uroven: "bezna", text: "Kolik procent pojistné částky vyplatí pojišťovna za rakovinu vykazující rané maligní změny (in situ)?", spravna_odpoved: "30", acceptedAnswers: ["30", "30 %"], distractors: ["20", "50"] },
+  { id: 22, kategorie: "VO", uroven: "bezna", text: "Kolik diagnóz obsahuje Kompletní varianta pojištění vážných onemocnění?", spravna_odpoved: "65", acceptedAnswers: ["65"], distractors: ["50", "75"] },
+  { id: 23, kategorie: "VO", uroven: "bezna", text: "Kolik diagnóz obsahuje Základní varianta pojištění vážných onemocnění?", spravna_odpoved: "11", acceptedAnswers: ["11"], distractors: ["9", "15"] },
+  { id: 24, kategorie: "VO", uroven: "tezka", text: "Za vrozené vady živě narozených dětí činí plnění kolik % ze sjednané pojistné částky?", spravna_odpoved: "50", acceptedAnswers: ["50", "50 %"], distractors: ["30", "100"] },
+  { id: 25, kategorie: "VO", uroven: "tezka", text: "Po kolika letech od prvního plnění u zhoubných nádorů lze plnit podruhé (multiplicitní rakovina)?", spravna_odpoved: "10", acceptedAnswers: ["10", "10 let"], distractors: ["5", "15"] },
+  { id: 26, kategorie: "VO", uroven: "tezka", text: "Kolik % pojistné částky se plní z připojištění PRO NI / PRO NĚJ při narození vícerčat?", spravna_odpoved: "30", acceptedAnswers: ["30", "30 %"], distractors: ["20", "50"] },
+  { id: 27, kategorie: "VO", uroven: "bezna", text: "Jaká je čekací doba (v měsících) pro vážná onemocnění?", spravna_odpoved: "2", acceptedAnswers: ["2", "2 měsíce", "2 mesice"], distractors: ["1", "3"] },
+  { id: 28, kategorie: "VO", uroven: "bezna", text: "Maximální pojistná částka pro pojištění vážných onemocnění u dítěte (v milionech Kč)?", spravna_odpoved: "10", acceptedAnswers: ["10", "10 mil", "10 mil.", "10000000", "10 000 000"], distractors: ["5", "15"] },
+  { id: 29, kategorie: "VO", uroven: "tezka", text: "Lze pojistnou částku u vážných onemocnění navýšit bez zkoumání zdravotního stavu při první svatbě. O kolik max procent?", spravna_odpoved: "50", acceptedAnswers: ["50", "50 %"], distractors: ["25", "100"] },
+  { id: 30, kategorie: "VO", uroven: "tezka", text: "Do kolika let věku lze využít opci na navýšení pojistné částky (svatba, narození dítěte atd.)?", spravna_odpoved: "50", acceptedAnswers: ["50"], distractors: ["45", "55"] },
+  { id: 31, kategorie: "TN", uroven: "bezna", text: "Jaká je nejvyšší možná úroveň progrese (násobek) u trvalých následků úrazu?", spravna_odpoved: "10", acceptedAnswers: ["10", "10x"], distractors: ["5", "8"] },
+  { id: 32, kategorie: "TN", uroven: "bezna", text: "Po kolika letech od úrazu se hodnotí trvalé následky, pokud se do té doby zdravotní stav neustálí?", spravna_odpoved: "3", acceptedAnswers: ["3", "3 roky"], distractors: ["1", "2"] },
+  { id: 33, kategorie: "TN", uroven: "bezna", text: "Maximální doba plnění denního odškodného z jednoho úrazu (v počtu dnů)?", spravna_odpoved: "365", acceptedAnswers: ["365"], distractors: ["180", "730"] },
+  { id: 34, kategorie: "TN", uroven: "bezna", text: "Od kolika % tělesného poškození lze sjednat trvalé následky úrazu?", spravna_odpoved: "0", acceptedAnswers: ["0", "0 %"], distractors: ["1", "10"] },
+  { id: 35, kategorie: "TN", uroven: "tezka", text: "Až do jakého limitu (v Kč) uhradí Cesta ke zdraví náklady spojené se zotavením?", spravna_odpoved: "100000", acceptedAnswers: ["100000", "100 000", "100000 kč", "100 000 kč"], distractors: ["50000", "150000"] },
+  { id: 36, kategorie: "TN", uroven: "tezka", text: "Jaký je limit pro příspěvek na prevenci v pojištění Cesta ke zdraví (v Kč)?", spravna_odpoved: "3000", acceptedAnswers: ["3000", "3 000", "3000 kč", "3 000 kč"], distractors: ["1500", "5000"] },
+  { id: 37, kategorie: "TN", uroven: "bezna", text: "Od kolika let nejdříve může být dítě pojištěno úrazově?", spravna_odpoved: "0", acceptedAnswers: ["0", "od narození", "hned od narození"], distractors: ["1", "3"] },
+  { id: 38, kategorie: "TN", uroven: "tezka", text: "Při čtyřnásobné progresi, pokud jsou trvalé následky přesně 50 %, hradí se jaký násobek pojistné částky?", spravna_odpoved: "2", acceptedAnswers: ["2", "2x"], distractors: ["3", "4"] },
+  { id: 39, kategorie: "TN", uroven: "bezna", text: "Maximální denní dávka (Kč) pro denní odškodné za úraz pro dospělého?", spravna_odpoved: "3000", acceptedAnswers: ["3000", "3 000", "3000 kč", "3 000 kč"], distractors: ["2000", "5000"] },
+  { id: 40, kategorie: "TN", uroven: "tezka", text: "Je výplata za denní odškodné omezena oceňovacími tabulkami? Napiš 1 pro ANO, 0 pro NE.", spravna_odpoved: "1", acceptedAnswers: ["1", "ano"], distractors: ["0", "2"] },
+  { id: 41, kategorie: "PN", uroven: "bezna", text: "Do kolika Kč za den není u pracovní neschopnosti nutné dokládat výši příjmu?", spravna_odpoved: "650", acceptedAnswers: ["650", "650 kč"], distractors: ["500", "1000"] },
+  { id: 42, kategorie: "PN", uroven: "bezna", text: "Od kolikátého dne ošetřování pojištěného začne pojišťovna plnit?", spravna_odpoved: "10", acceptedAnswers: ["10", "10. dne"], distractors: ["1", "14"] },
+  { id: 43, kategorie: "PN", uroven: "tezka", text: "Jaký je maximální počet dní pro plnění za pracovní neschopnost u OSVČ neplatící státní nemocenské pojištění?", spravna_odpoved: "548", acceptedAnswers: ["548"], distractors: ["365", "730"] },
+  { id: 44, kategorie: "PN", uroven: "tezka", text: "Kolik dnů pracovní neschopnosti v rámci rizikového těhotenství proplatí pojišťovna bez hospitalizace?", spravna_odpoved: "30", acceptedAnswers: ["30"], distractors: ["14", "60"] },
+  { id: 45, kategorie: "PN", uroven: "tezka", text: "Kolik dnů plnění maximálně poskytne pojišťovna za ošetřování v součtu ze všech událostí za celou dobu pojištění?", spravna_odpoved: "365", acceptedAnswers: ["365"], distractors: ["180", "548"] },
+  { id: 46, kategorie: "PN", uroven: "tezka", text: "Při hospitalizaci nad 90 dnů (od 91. dne) je plnění násobeno jakým koeficientem?", spravna_odpoved: "2", acceptedAnswers: ["2", "2x"], distractors: ["1,5", "3"] },
+  { id: 47, kategorie: "PN", uroven: "tezka", text: "Jaká je čekací doba v měsících pro hospitalizaci z důvodu porodu a těhotenství?", spravna_odpoved: "8", acceptedAnswers: ["8", "8 měsíců", "8 mesicu"], distractors: ["6", "9"] },
+  { id: 48, kategorie: "PN", uroven: "bezna", text: "Jaká je maximální denní dávka (Kč/den) pro pracovní neschopnost dospělého?", spravna_odpoved: "3000", acceptedAnswers: ["3000", "3 000", "3000 kč", "3 000 kč"], distractors: ["2000", "5000"] },
+  { id: 49, kategorie: "PN", uroven: "tezka", text: "Jaký je maximální počet dnů pro plnění za pobyt v lázních navazující na hospitalizaci?", spravna_odpoved: "30", acceptedAnswers: ["30"], distractors: ["14", "60"] },
+  { id: 50, kategorie: "PN", uroven: "tezka", text: "Od kolikátého dne pracovní neschopnosti u OSVČ se standardně vyplácí státní nemocenská?", spravna_odpoved: "15", acceptedAnswers: ["15", "15. dne"], distractors: ["1", "22"] }
+];
+
+/* =========================================================
+   STATE
+   ========================================================= */
+let state = {
+  gameMode:'solo',
+  timeLimit:20,
+  isDemo:false,
+  hexes:{},        // id -> 'neutral'|'player'|'player-help'|'system'|'system-locked'
+  hexCats:{},      // id -> 'S'|'I'|'VO'|'TN'|'PN'  ← STATICKÉ PŘIŘAZENÍ KATEGORIE
+  score:0,
+  stats:{correct:0, helped:0, wrong:0},
+  usedQuestions:[],
+  currentPhase:'intro',
+  currentPlayer:'player',
+  finalProgress:0,
+  finalWins:0,
+  activeHexId:null,
+  activeQuestion:null,
+  activeCategory:null,
+  helpUsedOnCurrent:false,
+  isStealAttempt:false
+};
+let timerInterval=null;
+let timeLeft=0;
+let hexMap={};
+
+/* =========================================================
+   HELPERS
+   ========================================================= */
+const $ = id => document.getElementById(id);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+function normalizeAnswer(v){
+  if(v == null) return '';
+  let s = String(v).toLowerCase().trim();
+  // unify decimal separators: comma -> dot
+  s = s.replace(',', '.');
+  // remove all whitespace (incl. NBSP a tenké mezery v tisících)
+  s = s.replace(/[\s\u00A0\u202F]+/g, '');
+  // remove all common units / suffixes — opakovaně, ať pokryjeme i kombinace ("1000kč", "10%", "5mil.")
+  const units = ['korunčeských','korun','kč','czk','procent','%','milionů','milionu','milion','mil.','mil','tisíc','tisíce','tisíců','tis.','tis','měsíců','měsíce','mesicu','mesice','dnů','dní','dnu','den','dne','let','rok','roku','roky','x'];
+  let changed = true;
+  while(changed){
+    changed = false;
+    for(const u of units){
+      if(s.endsWith(u)){ s = s.slice(0, -u.length); changed = true; }
+    }
+  }
+  // trailing dot
+  s = s.replace(/\.$/, '');
+  return s.trim();
+}
+function isCorrectAnswer(input, q){
+  const n = normalizeAnswer(input);
+  return [q.spravna_odpoved, ...(q.acceptedAnswers||[])].some(a => normalizeAnswer(a) === n);
+}
+function shuffle(a){
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+
+/* Vrátí otázku pro danou KATEGORII pole (a volitelně obtížnost). */
+function getQuestion(category, difficulty){
+  difficulty = difficulty || null;
+  let avail = QUESTION_BANK.filter(q =>
+    q.kategorie === category &&
+    (difficulty ? q.uroven === difficulty : true) &&
+    !state.usedQuestions.includes(q.id)
+  );
+  if(avail.length === 0){
+    avail = QUESTION_BANK.filter(q => q.kategorie === category && (difficulty ? q.uroven === difficulty : true));
+  }
+  if(avail.length === 0) return QUESTION_BANK[0];
+  const q = avail[Math.floor(Math.random()*avail.length)];
+  state.usedQuestions.push(q.id);
+  return q;
+}
+
+/* =========================================================
+   KATEGORIE → POLE
+   Vytvoří balanced + shuffled přiřazení kategorií 28 polím.
+   Distribuce: S 6, I 6, VO 6, TN 5, PN 5 = 28.
+   ========================================================= */
+function buildHexCategories(){
+  const pool = []
+    .concat(Array(6).fill('S'))
+    .concat(Array(6).fill('I'))
+    .concat(Array(6).fill('VO'))
+    .concat(Array(5).fill('TN'))
+    .concat(Array(5).fill('PN'));
+  shuffle(pool);
+  const map = {};
+  for(let i=1;i<=28;i++) map[i] = pool[i-1];
+  return map;
+}
+
+/* =========================================================
+   GRAPH
+   ========================================================= */
+function getNeighbors(id){
+  const pos = {}; let n=1;
+  for(let r=1;r<=7;r++) for(let c=1;c<=r;c++){ pos[n] = {r,c}; n++; }
+  const rev = {};
+  Object.keys(pos).forEach(k => { const p=pos[k]; rev[p.r+','+p.c] = +k; });
+  const p = pos[id]; if(!p) return [];
+  const cands = [[p.r-1,p.c-1],[p.r-1,p.c],[p.r,p.c-1],[p.r,p.c+1],[p.r+1,p.c],[p.r+1,p.c+1]];
+  return cands.map(([r,c]) => rev[r+','+c]).filter(Boolean);
+}
+
+const leftEdges   = [1,2,4,7,11,16,22];
+const rightEdges  = [1,3,6,10,15,21,28];
+const bottomEdges = [22,23,24,25,26,27,28];
+
+function getPlayerHexIds(){
+  return Object.keys(state.hexes).filter(k => state.hexes[k]==='player' || state.hexes[k]==='player-help').map(Number);
+}
+function checkWinCondition(){
+  const ph = getPlayerHexIds(); if(ph.length===0) return false;
+  const visited = new Set([ph[0]]); const queue=[ph[0]];
+  while(queue.length){
+    const cur = queue.shift();
+    getNeighbors(cur).forEach(n => { if(ph.includes(n) && !visited.has(n)){ visited.add(n); queue.push(n); } });
+  }
+  const c = [...visited];
+  return c.some(id=>leftEdges.includes(id)) && c.some(id=>rightEdges.includes(id)) && c.some(id=>bottomEdges.includes(id));
+}
+function edgeProgress(){
+  const ph = getPlayerHexIds();
+  return {
+    left:   ph.some(id=>leftEdges.includes(id)),
+    right:  ph.some(id=>rightEdges.includes(id)),
+    bottom: ph.some(id=>bottomEdges.includes(id))
+  };
+}
+
+/* =========================================================
+   DEADLOCK DETECTION
+   Hráč může teoreticky stále vyhrát, pokud existuje souvislá
+   komponenta z polí (jeho vlastní + neutrální), která se dotýká
+   všech tří stran pyramidy. Pole soupeře (system) a uzamčená
+   pole (system-locked) blokují průchod.
+   ========================================================= */
+function canStillWin(){
+  // Neutrální i locked pole jsou pro hráče stále potenciálně dosažitelná
+  // (locked přes náhradní otázku A/B/C). Pole soupeře (system) blokují cestu.
+  const available = id => {
+    const s = state.hexes[id];
+    return s === 'neutral' || s === 'player' || s === 'player-help' || s === 'system-locked';
+  };
+  const seen = new Set();
+  for(let start=1; start<=28; start++){
+    if(!available(start) || seen.has(start)) continue;
+    const comp = []; const q = [start]; seen.add(start);
+    while(q.length){
+      const cur = q.shift(); comp.push(cur);
+      getNeighbors(cur).forEach(n => {
+        if(available(n) && !seen.has(n)){ seen.add(n); q.push(n); }
+      });
+    }
+    const hasL = comp.some(id => leftEdges.includes(id));
+    const hasR = comp.some(id => rightEdges.includes(id));
+    const hasB = comp.some(id => bottomEdges.includes(id));
+    if(hasL && hasR && hasB) return true;
+  }
+  return false;
+}
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+function switchView(phase){
+  state.currentPhase = phase;
+  $$('.screen').forEach(s => s.classList.remove('active'));
+  if(phase==='intro')  { $('screen-intro').classList.add('active'); cpuHide(); stopSelectionTimer(); }
+  if(phase==='game')   $('screen-game').classList.add('active');
+  if(phase==='final')  { $('screen-final').classList.add('active'); cpuHide(); stopSelectionTimer(); }
+  if(phase==='result') { $('screen-result').classList.add('active'); cpuHide(); stopSelectionTimer(); }
+  if(phase!=='intro' && phase!=='result') saveState();
+}
+
+function updatePanel(){
+  $('p-mode').textContent = state.gameMode==='vs' ? 'Vs. počítač' : 'Trénink';
+  $('p-score').textContent = state.score;
+  $('p-correct').textContent = state.stats.correct;
+  $('p-helped').textContent = state.stats.helped;
+  const ep = edgeProgress();
+  setSide('side-left',   ep.left);
+  setSide('side-right',  ep.right);
+  setSide('side-bottom', ep.bottom);
+  if(state.raceMode) updateRaceBanner();
+}
+function setSide(id, done){ $(id).classList.toggle('done', done); }
+
+function updateStatus(){
+  const strip = $('status-strip');
+  strip.classList.remove('player','system','win');
+  if(state.gameMode !== 'vs'){
+    strip.classList.add('player');
+    $('status-who').textContent = 'Trénink';
+    $('status-what').textContent = 'Klikněte na pole a odpovězte. Propojte všechny 3 strany pyramidy.';
+    return;
+  }
+  if(state.currentPlayer === 'player'){
+    strip.classList.add('player');
+    $('status-who').textContent = 'Jste na tahu';
+    $('status-what').textContent = 'Klikněte na volné pole nebo na pole počítače (losování).';
+  } else {
+    strip.classList.add('system');
+    $('status-who').textContent = 'Tah počítače';
+    $('status-what').textContent = 'Soupeř přemýšlí…';
+  }
+}
+
+/* =========================================================
+   POČÍTAČ — bublina
+   ========================================================= */
+const CPU_PICK = [
+  'Pole #{id}, jdu do toho. To zvládnu v suchým triku.',
+  'Tak já si vemu #{id}, jo? Easy money.',
+  'Pole #{id} — sleduj profíka při práci.',
+  'No tak #{id}. Snad tam nebude zase nějakej ultra špíček.',
+  '#{id}? Beru. Konec srandy, jdu po tobě.',
+  'Hele, na #{id} už koukám delší dobu, tak sem s tim.',
+  'Pole #{id}, ať se to hejbe.'
+];
+const CPU_QUESTION = [
+  'Kategorie {cat}? No to je kampaň!',
+  '{cat}, no nazdar. To je tedy překvápko.',
+  '{cat}? Když mě o půlnoci vzbudíš, tohle vím.',
+  '{cat}, to si z elearningu pamatuju jako bych ho dělal včera.',
+  'No {cat}, klasika. Na to jsem odborník.',
+  '{cat}? Tak to máš den, kámo.'
+];
+const CPU_SUCCESS = [
+  'V suchým triku. Říkal jsem, že je to prakticky rozhodnutý od začátku.',
+  'No prosím. V Kooperativě mi budou vykat, ti říkám.',
+  'Zááááááásah!',
+  'Nemůžeme to přepnout na vyšší obtížnost?',
+  'Říkal jsem, víkendy trávím s příručkou Flexi.',
+  'Pohodex!',
+  'Co je to za úroveň otázek, skoro mě to uráží.',
+  'Je to prokletí bejt tak famózní.'
+];
+const CPU_FAIL = [
+  'No to je kampaň, co?',
+  'Kdo tyhle otázky vymýšlel? To je spiknutí.',
+  'Když se to probíralo, byl jsem asi nemocnej nebo na záchodě.',
+  'Tohle není fér, na to mě nikdo nepřipravil.',
+  'Každej někdy udělá chybu. No bóže.',
+  'Určitě to tak historicky bejvalo, že si to špatně pamatuju.',
+  'Je to cinklý, fakt jediný možný vysvětlení.',
+  'Nebudu lhát, začínám být mírně neklidný.'
+];
+const CPU_PLAYER_WRONG = [
+  'Hele, to se muselo stát, všechno prostě nevíš!',
+  'Já to říkal, moje chvíle přijde.',
+  'Ale, že by chybička?',
+  'Tohle bych věděl zrovna, samozřejmě.'
+];
+const CPU_PLAYER_TIMEOUT = [
+  'Pomalu, pomalu… moc pomalu.',
+  'Zaspal jsi, kamaráde.',
+  'Tak nic, čas tě dohnal.'
+];
+const CPU_PLAYER_CORRECT = [
+  'No dobrý. Ale jako občas se trefí fakt každý.',
+  'Hm, slušný. Já tě stejně doženu.',
+  'Radši se ani neotáčej, stojím přímo za tebou.',
+  'Bod pro tebe. Užij si to, dokud máš pořád naději na výhru.'
+];
+const CPU_PLAYER_WIN = [
+  'Klobouk dolů, hraješ jinou ligu.',
+  'Musím smeknout, dobrá práce.',
+  'Tak jo, dneska ti to fakt šlo. Gratuluju.',
+  'Uznávám porážku. Příště si to rozdáme znovu.'
+];
+function pickPhrase(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+let _cpuTypeTimer = null;
+function cpuSay(text, done){
+  const el = $('cpu-say');
+  const bubble = $('cpu-bubble');
+  bubble.classList.add('show');
+  if(_cpuTypeTimer){ clearInterval(_cpuTypeTimer); _cpuTypeTimer = null; }
+  el.textContent = '';
+  let i = 0;
+  const step = 50; // ms per char
+  _cpuTypeTimer = setInterval(() => {
+    el.textContent = text.slice(0, ++i);
+    if(i >= text.length){
+      clearInterval(_cpuTypeTimer);
+      _cpuTypeTimer = null;
+      // pauza na přečtení (min 900ms, max 2200ms — podle délky)
+      const readMs = Math.min(2200, Math.max(900, text.length * 45));
+      if(done) setTimeout(done, readMs);
+    }
+  }, step);
+}
+function cpuHide(){
+  if(_cpuTypeTimer){ clearInterval(_cpuTypeTimer); _cpuTypeTimer = null; }
+  $('cpu-bubble').classList.remove('show');
+}
+
+function initPyramid(){
+  const py = $('pyramid');
+  py.innerHTML = '';
+  hexMap = {};
+  let id = 1;
+  for(let r=1;r<=7;r++){
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.style.zIndex = String(8-r);
+    for(let c=1;c<=r;c++){
+      const cat = state.hexCats[id] || 'S';
+      const btn = document.createElement('button');
+      btn.className = 'hex neutral';
+      btn.dataset.id = String(id);
+      btn.setAttribute('role','gridcell');
+      btn.setAttribute('aria-label', 'Pole ' + id + ', kategorie ' + CAT_NAMES[cat]);
+      btn.innerHTML = '<span class="cat">'+cat+'</span><span class="num">'+id+'</span>';
+      const hexId = id;
+      btn.addEventListener('click', () => handleHexClick(hexId));
+      hexMap[id] = btn;
+      if(!state.hexes[id]) state.hexes[id] = 'neutral';
+      row.appendChild(btn);
+      id++;
+    }
+    py.appendChild(row);
+  }
+  Object.keys(state.hexes).forEach(k => updateHex(+k, state.hexes[k]));
+}
+
+function updateHex(id, status){
+  const prev = state.hexes[id];
+  state.hexes[id] = status;
+  const btn = hexMap[id]; if(!btn) return;
+  btn.classList.remove('neutral','player','player-help','system','system-locked','clickable','targeted');
+  btn.classList.add(status);
+  // claim animace při změně z neutral / system na obsazený stav
+  if(prev && prev !== status && status !== 'neutral'){
+    btn.classList.remove('claiming');
+    void btn.offsetWidth;
+    btn.classList.add('claiming');
+    setTimeout(() => btn.classList.remove('claiming'), 700);
+  }
+  let clickable = false;
+  if(status === 'neutral'){
+    clickable = (state.gameMode !== 'vs' || state.currentPlayer === 'player');
+  } else if(status === 'system'){
+    clickable = (state.gameMode === 'vs' && state.currentPlayer === 'player');
+  } else if(status === 'system-locked'){
+    // Zablokované pole jde získat náhradní otázkou (A/B/C losování).
+    clickable = (state.gameMode !== 'vs' || state.currentPlayer === 'player');
+  }
+  if(clickable) btn.classList.add('clickable');
+  btn.disabled = !clickable;
+}
+
+function refreshClickability(){
+  Object.keys(state.hexes).forEach(k => updateHex(+k, state.hexes[k]));
+}
+
+/* =========================================================
+   TIMER
+   ========================================================= */
+function startTimer(seconds){
+  stopTimer();
+  timeLeft = seconds;
+  const num = $('timer-num'), bar = $('timer-bar'), modal = $('modal');
+  num.textContent = timeLeft + 's';
+  modal.classList.remove('danger');
+  bar.style.transition = 'none';
+  bar.style.width = '100%';
+  void bar.offsetWidth;
+  bar.style.transition = 'width '+seconds+'s linear';
+  bar.style.width = '0%';
+  setPanelTimer('Otázka běží', timeLeft, seconds);
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    num.textContent = timeLeft + 's';
+    setPanelTimer('Otázka běží', timeLeft, seconds);
+    if(timeLeft <= Math.ceil(seconds*0.25)) modal.classList.add('danger');
+    if(timeLeft <= 0){ stopTimer(); handleModalTimeout(); }
+  }, 1000);
+}
+function stopTimer(){ if(timerInterval){ clearInterval(timerInterval); timerInterval=null; } }
+
+/* =========================================================
+   MODAL
+   ========================================================= */
+function openModal(hexId, isSteal){
+  stopSelectionTimer();
+  state.activeHexId = hexId;
+  state.helpUsedOnCurrent = false;
+  state.correctionUsed = false;
+  state.isStealAttempt = !!isSteal;
+
+  // KATEGORIE = kategorie pole (FIX)
+  const cat = state.hexCats[hexId];
+  state.activeCategory = cat;
+  const q = getQuestion(cat, null);
+  state.activeQuestion = q;
+
+  $('m-cat').textContent = cat + ' · ' + CAT_NAMES[cat];
+  $('m-level').textContent = q.uroven === 'tezka' ? 'Těžká' : 'Běžná';
+  $('m-qnum').textContent = (isSteal ? (state.hexes[hexId]==='system-locked' ? 'Náhradní otázka · ' : 'Losování · ') : '') + 'Otázka #' + q.id;
+  $('q-text').textContent = q.text;
+
+  const inputWrap = $('input-wrap');
+  const helpWrap = $('help-wrap');
+  const helpHint = $('help-hint');
+  const submit = $('btn-submit');
+  $('feedback').className = 'feedback';
+
+  // U losování použijeme rovnou A/B/C
+  if(isSteal){
+    inputWrap.hidden = true;
+    helpWrap.hidden = false;
+    helpHint.style.display = 'none';
+    submit.style.display = 'none';
+    renderHelp(q);
+    $('m-hint').textContent = 'Vyberte jednu z možností.';
+  } else {
+    inputWrap.hidden = false;
+    helpWrap.hidden = true;
+    helpWrap.innerHTML = '';
+    helpHint.style.display = '';
+    submit.style.display = '';
+    $('q-input').value = '';
+    $('m-hint').textContent = 'Stiskněte Enter pro odeslání. Po chybě máte 1 opravu (jen u textu).';
+    $('btn-correct').hidden = true;
+  }
+
+  // Demo
+  const demo = $('demo-hint');
+  if(state.isDemo){ demo.hidden = false; demo.textContent = 'DEMO — správně: ' + q.spravna_odpoved; }
+  else demo.hidden = true;
+
+  $('backdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => { if(isSteal) helpWrap.querySelector('button')?.focus(); else $('q-input').focus(); }, 60);
+
+  const sec = state.isDemo ? CONFIG.timerDemo : state.timeLimit;
+  $('timer-num').textContent = sec + 's';
+  startTimer(sec);
+}
+
+function closeModal(){
+  stopTimer();
+  $('backdrop').classList.remove('open');
+  document.body.style.overflow = '';
+  state.activeHexId = null;
+  state.activeQuestion = null;
+  state.activeCategory = null;
+  setPanelTimerIdle();
+}
+
+function renderHelp(q){
+  const wrap = $('help-wrap');
+  wrap.innerHTML = '';
+  const opts = [q.spravna_odpoved, ...(q.distractors||[])].slice(0,3);
+  shuffle(opts);
+  ['A','B','C'].forEach((L, i) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'help-opt';
+    b.innerHTML = '<span class="help-letter">'+L+'</span><span>'+opts[i]+'</span>';
+    b.addEventListener('click', () => processAnswer(opts[i], true));
+    wrap.appendChild(b);
+  });
+}
+
+function activateHelp(){
+  if(state.helpUsedOnCurrent) return;
+  state.helpUsedOnCurrent = true;
+  $('input-wrap').hidden = true;
+  $('help-wrap').hidden = false;
+  $('help-hint').style.display = 'none';
+  $('btn-submit').style.display = 'none';
+  $('btn-correct').hidden = true;
+  renderHelp(state.activeQuestion);
+  $('m-hint').textContent = 'S nápovědou — získáte 1 bod.';
+}
+
+function showFeedback(kind, correctAnswer){
+  const fb = $('feedback');
+  fb.className = 'feedback show ' + kind;
+  const labels = {correct:'Správně.', helped:'Správně s nápovědou.', wrong:'Chyba.', timeout:'Čas vypršel.'};
+  fb.innerHTML = labels[kind] + ((kind==='wrong'||kind==='timeout') && correctAnswer ? '<small>Správně: '+correctAnswer+'</small>' : '');
+}
+
+/* =========================================================
+   TURN LOGIC
+   ========================================================= */
+function handleHexClick(id){
+  if(state.currentPhase !== 'game') return;
+  if(state.gameMode === 'vs' && state.currentPlayer !== 'player') return;
+  const st = state.hexes[id];
+  if(st === 'neutral') openModal(id, false);
+  // Oranžová pole počítače (system) NELZE převzít — jsou počítačova.
+  // Černá zablokovaná pole (system-locked) lze získat zpět náhradní otázkou.
+  else if(st === 'system-locked') openModal(id, true);
+}
+
+function processAnswer(answer, fromHelp){
+  const q = state.activeQuestion, id = state.activeHexId;
+  if(!q || !id) return;
+  const correct = isCorrectAnswer(answer, q);
+  const isSteal = state.isStealAttempt;
+  const usedHelp = fromHelp || state.helpUsedOnCurrent;
+
+  // Nabídka opravy: jen u textové odpovědi, ne u nápovědy/losování, jen jednou, pokud zbývá čas.
+  if(!correct && !isSteal && !usedHelp && !state.correctionUsed && timeLeft > 2){
+    state.correctionUsed = true;
+    const fb = $('feedback');
+    fb.className = 'feedback show wrong';
+    fb.innerHTML = 'Špatně. Máte ještě jednu opravu — upravte odpověď a odešlete.';
+    $('btn-correct').hidden = true;
+    $('q-input').focus();
+    $('q-input').select();
+    return; // timer pokračuje, hráč může poslat znovu
+  }
+
+  stopTimer();
+
+  let kind = 'wrong';
+  if(correct){
+    if(isSteal || usedHelp){
+      state.score += CONFIG.pointsHelp;
+      state.stats.helped += 1;
+      updateHex(id, 'player-help');
+      kind = 'helped';
+      if(isSteal) toast('Pole získáno (+1)', 'success');
+    } else {
+      state.score += CONFIG.pointsCorrect;
+      state.stats.correct += 1;
+      updateHex(id, 'player');
+      kind = 'correct';
+    }
+  } else {
+    state.stats.wrong += 1;
+    updateHex(id, 'system-locked');
+  }
+  showFeedback(kind, q.spravna_odpoved);
+  updatePanel(); saveState();
+  if(state.gameMode === 'vs'){
+    if(kind === 'wrong') cpuSay(pickPhrase(CPU_PLAYER_WRONG));
+    else if(kind === 'correct') cpuSay(pickPhrase(CPU_PLAYER_CORRECT));
+  }
+  setTimeout(() => { closeModal(); postTurn(); }, kind==='correct'||kind==='helped' ? 700 : 1400);
+}
+
+function handleModalTimeout(){
+  const q = state.activeQuestion, id = state.activeHexId;
+  if(!q || !id) return;
+  state.stats.wrong += 1;
+  updateHex(id, 'system-locked');
+  showFeedback('timeout', q.spravna_odpoved);
+  updatePanel(); saveState();
+  if(state.gameMode === 'vs') cpuSay(pickPhrase(CPU_PLAYER_TIMEOUT));
+  setTimeout(() => { closeModal(); postTurn(); }, 1400);
+}
+
+function postTurn(){
+  if(checkWinCondition()){ startFinal(); return; }
+  // Deadlock check ve vs režimu: hráč už nemůže propojit 3 strany.
+  // Místo okamžitého konce přepneme do "Souboje o pole" — hraje se dál,
+  // dokud nejsou všechna pole vyřešená, a vyhodnotí se podle počtu polí.
+  if(state.gameMode === 'vs' && !state.raceMode && !canStillWin()){
+    enterRaceMode();
+  }
+  // V souboji: pokud už nejsou žádná volná ani zablokovaná hratelná pole, vyhodnotíme.
+  if(state.raceMode && countOpenFields() === 0){
+    finishRace();
+    return;
+  }
+  if(state.gameMode === 'vs') switchTurn();
+  else refreshClickability();
+}
+
+function countOpenFields(){
+  // pole, která ještě mohou změnit majitele
+  return Object.keys(state.hexes).filter(k => {
+    const s = state.hexes[k];
+    return s === 'neutral' || s === 'system-locked';
+  }).length;
+}
+function countPlayerFields(){
+  return Object.keys(state.hexes).filter(k => state.hexes[k]==='player' || state.hexes[k]==='player-help').length;
+}
+function countSystemFields(){
+  return Object.keys(state.hexes).filter(k => state.hexes[k]==='system').length;
+}
+
+function enterRaceMode(){
+  state.raceMode = true;
+  showRaceBanner(true);
+  updateRaceBanner();
+  toast('Propojení už není možné — souboj o pole!', 'warning');
+}
+
+function finishRace(){
+  const me = countPlayerFields();
+  const cpu = countSystemFields();
+  const win = me > cpu;
+  const msg = 'Souboj o pole: vy ' + me + ' polí · počítač ' + cpu + ' polí.';
+  setTimeout(() => showResult(win, msg + (win ? ' Vyhráli jste na počet polí.' : (me===cpu ? ' Remíza — počítač má v takovém případě navrch.' : ' Počítač má víc polí.'))), 600);
+}
+
+function showRaceBanner(show){
+  const el = $('race-banner');
+  if(!el) return;
+  el.hidden = !show;
+}
+function updateRaceBanner(){
+  const el = $('race-banner');
+  if(!el || el.hidden) return;
+  const open = countOpenFields();
+  const me = countPlayerFields();
+  const cpu = countSystemFields();
+  $('race-open').textContent = open;
+  $('race-me').textContent = me;
+  $('race-cpu').textContent = cpu;
+}
+
+function switchTurn(){
+  state.currentPlayer = state.currentPlayer === 'player' ? 'system' : 'player';
+  updateStatus();
+  refreshClickability();
+  if(state.currentPlayer === 'player'){
+    cpuHide();
+    startSelectionTimer();
+  } else {
+    stopSelectionTimer();
+  }
+  if(state.currentPlayer === 'system') setTimeout(systemTurn, 700);
+}
+
+/* =========================================================
+   SELECTION TIMER — 8 s na výběr pole ve vs režimu
+   Zároveň slouží jako panelový countdown.
+   ========================================================= */
+let selectionInterval = null;
+let selectionLeft = 0;
+function startSelectionTimer(){
+  stopSelectionTimer();
+  if(state.gameMode !== 'vs') { setPanelTimerIdle(); return; }
+  selectionLeft = CONFIG.selectionTimeout;
+  setPanelTimer('Tah hráče', selectionLeft, CONFIG.selectionTimeout);
+  selectionInterval = setInterval(() => {
+    selectionLeft -= 1;
+    setPanelTimer('Tah hráče', selectionLeft, CONFIG.selectionTimeout);
+    if(selectionLeft <= 0){
+      stopSelectionTimer();
+      toast('Vypršel čas na výběr — tah přechází na počítače', 'warning');
+      switchTurn();
+    }
+  }, 1000);
+}
+function stopSelectionTimer(){
+  if(selectionInterval){ clearInterval(selectionInterval); selectionInterval = null; }
+}
+
+/* Pomocné: panelový countdown (společný pro selection + modal). */
+function setPanelTimer(label, sec, total){
+  const row = $('panel-timer-row');
+  const lbl = $('p-timer-label');
+  const val = $('p-timer');
+  const bar = $('p-timer-bar');
+  if(!row) return;
+  lbl.textContent = label;
+  val.textContent = Math.max(0, sec) + ' s';
+  const pct = Math.max(0, Math.min(100, (sec/total)*100));
+  bar.style.width = pct + '%';
+  row.classList.toggle('warn',   sec <= 5 && sec > 2);
+  row.classList.toggle('danger', sec <= 2);
+  bar.classList.toggle('warn',   sec <= 5 && sec > 2);
+  bar.classList.toggle('danger', sec <= 2);
+}
+function setPanelTimerIdle(){
+  const row = $('panel-timer-row');
+  const lbl = $('p-timer-label');
+  const val = $('p-timer');
+  const bar = $('p-timer-bar');
+  if(!row) return;
+  row.classList.remove('warn','danger');
+  bar.classList.remove('warn','danger');
+  lbl.textContent = 'Čas / otázku';
+  val.textContent = (state.isDemo ? CONFIG.timerDemo : state.timeLimit) + ' s';
+  bar.style.width = '0%';
+}
+
+function systemTurn(){
+  if(state.currentPhase !== 'game') return;
+  const neutralIds = Object.keys(state.hexes).filter(k => state.hexes[k]==='neutral').map(Number);
+  if(neutralIds.length === 0){ switchTurn(); return; }
+  const sysIds = Object.keys(state.hexes).filter(k => state.hexes[k]==='system' || state.hexes[k]==='system-locked').map(Number);
+  let prefer = [];
+  sysIds.forEach(s => getNeighbors(s).forEach(n => { if(neutralIds.includes(n) && !prefer.includes(n)) prefer.push(n); }));
+  // S pravděpodobností systemIrrationalRate ignoruje strategii a vybere náhodné pole — dává hráči šanci.
+  const irrational = Math.random() < CONFIG.systemIrrationalRate;
+  const pool = (irrational || prefer.length === 0) ? neutralIds : prefer;
+  const target = pool[Math.floor(Math.random()*pool.length)];
+
+  const cat = state.hexCats[target];
+  const sampleQs = QUESTION_BANK.filter(q => q.kategorie === cat);
+  const sampleQ = sampleQs[Math.floor(Math.random()*sampleQs.length)] || QUESTION_BANK[0];
+  const targetBtn = hexMap[target];
+
+  // 1) PC oznámí pole + cílový hex pulzuje
+  if(targetBtn) targetBtn.classList.add('targeted');
+  cpuSay(pickPhrase(CPU_PICK).replace('{id}', target), () => {
+    if(state.currentPhase !== 'game'){ if(targetBtn) targetBtn.classList.remove('targeted'); return; }
+    // 2) Otázka
+    cpuSay(pickPhrase(CPU_QUESTION).replace('{cat}', CAT_NAMES[cat]), () => {
+      if(state.currentPhase !== 'game'){ if(targetBtn) targetBtn.classList.remove('targeted'); return; }
+      // 3) Výsledek — pity rule: nikdy ne 2 chyby v řadě (po 1. fail je další garantovaně dobře)
+      let ok = Math.random() < CONFIG.systemAccuracy;
+      if(!ok && (state.cpuFailStreak||0) >= 1) ok = true;
+      state.cpuFailStreak = ok ? 0 : ((state.cpuFailStreak||0) + 1);
+      if(targetBtn) targetBtn.classList.remove('targeted');
+      if(ok) updateHex(target, 'system');
+      else   updateHex(target, 'system-locked');
+      updatePanel(); saveState();
+      cpuSay(pickPhrase(ok ? CPU_SUCCESS : CPU_FAIL), () => {
+        cpuHide();
+        // V race módu vyhodnotíme rovnou po systémovém tahu, pokud došla pole.
+        if(state.raceMode && countOpenFields() === 0){ finishRace(); return; }
+        switchTurn();
+      });
+    });
+  });
+}
+
+/* =========================================================
+   FINÁLE
+   ========================================================= */
+function startFinal(){
+  state.currentPhase = 'final';
+  state.finalProgress = 0;
+  state.finalWins = 0;
+  switchView('final');
+  // Naplnit celebration shrnutí
+  const total = state.stats.correct + state.stats.helped + state.stats.wrong;
+  const acc = total > 0 ? Math.round(((state.stats.correct + state.stats.helped) / total) * 100) : 0;
+  $('celebrate-stats').innerHTML =
+    '<div class="cs"><span class="num">'+state.score+'</span><span class="lbl">Skóre</span></div>' +
+    '<div class="cs"><span class="num">'+state.stats.correct+'</span><span class="lbl">Bez nápovědy</span></div>' +
+    '<div class="cs"><span class="num">'+state.stats.helped+'</span><span class="lbl">S nápovědou</span></div>' +
+    '<div class="cs"><span class="num">'+acc+'%</span><span class="lbl">Úspěšnost</span></div>';
+  let sum = 'Skvělý postup pyramidou. ';
+  if(state.stats.wrong === 0) sum += 'Bez jediné chyby — luxus.';
+  else if(state.stats.helped === 0) sum += 'Bez jediné nápovědy — výborná znalost.';
+  else sum += 'Solidní výkon, teď to dotáhněte ve finále.';
+  $('celebrate-summary').textContent = sum;
+  $('final-celebrate').hidden = false;
+  $('final-running').hidden = true;
+  saveState();
+}
+
+function beginFinalQuestions(){
+  $('final-celebrate').hidden = true;
+  $('final-running').hidden = false;
+  renderFinalDots();
+  setTimeout(loadFinal, 300);
+}
+function renderFinalDots(){
+  const wrap = $('final-progress'); wrap.innerHTML = '';
+  for(let i=0;i<CONFIG.finalQuestionCount;i++){
+    const d = document.createElement('span');
+    d.className = 'final-dot';
+    if(i === state.finalProgress) d.classList.add('current');
+    wrap.appendChild(d);
+  }
+  $('final-meta').textContent =
+    'Otázka ' + Math.min(state.finalProgress+1, CONFIG.finalQuestionCount) + ' / ' + CONFIG.finalQuestionCount +
+    ' · 45 s · ' + state.finalWins + ' správně';
+}
+function loadFinal(){
+  if(state.finalProgress >= CONFIG.finalQuestionCount){
+    const win = state.finalWins >= CONFIG.finalRequiredWins;
+    const reason = win
+      ? 'Zvládli jste finále: ' + state.finalWins + ' z ' + CONFIG.finalQuestionCount + ' správně.'
+      : 'Ve finále jste získali ' + state.finalWins + ' z ' + CONFIG.finalQuestionCount + ' — k vítězství bylo potřeba ' + CONFIG.finalRequiredWins + '.';
+    showResult(win, reason);
+    return;
+  }
+  renderFinalDots();
+  // Náhodná kategorie pro finále, ale jen těžké
+  const cat = CATEGORIES[Math.floor(Math.random()*CATEGORIES.length)];
+  const q = getQuestion(cat, 'tezka');
+  state.activeQuestion = q;
+  state.activeCategory = cat;
+  state.isStealAttempt = false;
+  state.helpUsedOnCurrent = false;
+
+  $('m-cat').textContent = cat + ' · ' + CAT_NAMES[cat];
+  $('m-level').textContent = 'Finále · těžká';
+  $('m-qnum').textContent = 'Finále #' + (state.finalProgress+1) + ' / ' + CONFIG.finalQuestionCount;
+  $('q-text').textContent = q.text;
+
+  $('input-wrap').hidden = false;
+  $('help-wrap').hidden = true;
+  $('help-wrap').innerHTML = '';
+  $('help-hint').style.display = 'none';
+  $('btn-submit').style.display = '';
+  $('q-input').value = '';
+  $('feedback').className = 'feedback';
+  $('m-hint').textContent = 'Bez nápovědy. Enter pro odeslání.';
+
+  const demo = $('demo-hint');
+  if(state.isDemo){ demo.hidden = false; demo.textContent = 'DEMO — správně: ' + q.spravna_odpoved; } else demo.hidden = true;
+
+  $('backdrop').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  setTimeout(() => $('q-input').focus(), 60);
+  startFinalTimer(state.isDemo ? CONFIG.timerDemo : CONFIG.finaleTimer);
+}
+function startFinalTimer(sec){
+  stopTimer();
+  timeLeft = sec;
+  const num = $('timer-num'), bar = $('timer-bar'), modal = $('modal');
+  num.textContent = sec + 's';
+  modal.classList.remove('danger');
+  bar.style.transition = 'none';
+  bar.style.width = '100%';
+  void bar.offsetWidth;
+  bar.style.transition = 'width '+sec+'s linear';
+  bar.style.width = '0%';
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    num.textContent = timeLeft+'s';
+    if(timeLeft <= Math.ceil(sec*0.25)) modal.classList.add('danger');
+    if(timeLeft <= 0){ stopTimer(); handleFinalTimeout(); }
+  }, 1000);
+}
+function processFinalAnswer(answer){
+  stopTimer();
+  const q = state.activeQuestion; if(!q) return;
+  const dots = $('final-progress').children;
+  if(isCorrectAnswer(answer, q)){
+    state.finalWins += 1;
+    state.stats.correct += 1; state.score += CONFIG.pointsCorrect;
+    if(dots[state.finalProgress]) { dots[state.finalProgress].classList.remove('current'); dots[state.finalProgress].classList.add('correct'); }
+    showFeedback('correct');
+  } else {
+    state.stats.wrong += 1;
+    if(dots[state.finalProgress]) { dots[state.finalProgress].classList.remove('current'); dots[state.finalProgress].classList.add('wrong'); }
+    showFeedback('wrong', q.spravna_odpoved);
+  }
+  state.finalProgress += 1;
+  saveState();
+  setTimeout(() => { closeModal(); loadFinal(); }, 1100);
+}
+function handleFinalTimeout(){
+  const q = state.activeQuestion;
+  state.stats.wrong += 1;
+  const dots = $('final-progress').children;
+  if(dots[state.finalProgress]) { dots[state.finalProgress].classList.remove('current'); dots[state.finalProgress].classList.add('wrong'); }
+  showFeedback('timeout', q ? q.spravna_odpoved : '');
+  state.finalProgress += 1;
+  saveState();
+  setTimeout(() => { closeModal(); loadFinal(); }, 1100);
+}
+
+/* =========================================================
+   RESULT
+   ========================================================= */
+function showResult(win, reason){
+  state.currentPhase = 'result';
+  switchView('result');
+  const head = $('result-head');
+  head.classList.remove('win','loss');
+  head.classList.add(win ? 'win' : 'loss');
+  $('result-verdict').textContent = win ? 'Vítězství' : 'Konec hry';
+  $('result-title').textContent = win ? 'Skvělý výkon' : 'Tentokrát to nevyšlo';
+  $('result-text').textContent = reason || (win ? 'Propojili jste pyramidu a zvládli i finále.' : 'Zkuste to znovu — pokaždé se zlepšujete.');
+  const total = state.stats.correct + state.stats.helped + state.stats.wrong;
+  const acc = total > 0 ? Math.round(((state.stats.correct + state.stats.helped) / total) * 100) : 0;
+  $('r-score').textContent = state.score;
+  $('r-acc').textContent = acc + '%';
+  $('r-helped').textContent = state.stats.helped;
+  $('r-wrong').textContent = state.stats.wrong;
+  let s = 'Skóre ' + state.score + ' bodů, úspěšnost ' + acc + ' %. ';
+  if(win) s += state.stats.helped===0 ? 'Bez jediné nápovědy — výborná znalost produktu.' : (state.stats.helped + 'x jste využili nápovědu.');
+  else s += state.stats.wrong >= 3 ? 'Doporučujeme zopakovat si materiály FLEXI.' : 'Byli jste blízko — další pokus vyjde.';
+  if(win && state.gameMode === 'vs') s += ' ' + pickPhrase(CPU_PLAYER_WIN) + ' — počítač';
+  $('result-summary').textContent = s;
+  clearStorage();
+}
+
+/* =========================================================
+   STORAGE
+   ========================================================= */
+function saveState(){ try{ localStorage.setItem('flexiQuizState', JSON.stringify(state)); }catch(e){} }
+function loadState(){ try{ const r = localStorage.getItem('flexiQuizState'); return r ? JSON.parse(r) : null; }catch(e){ return null; } }
+function clearStorage(){ try{ localStorage.removeItem('flexiQuizState'); }catch(e){} }
+
+/* =========================================================
+   TOAST
+   ========================================================= */
+function toast(msg, kind){
+  const t = document.createElement('div');
+  t.className = 'toast ' + (kind||'');
+  t.textContent = msg;
+  $('toasts').appendChild(t);
+  setTimeout(() => t.classList.add('fading'), 1800);
+  setTimeout(() => t.remove(), 2300);
+}
+
+/* =========================================================
+   LIFECYCLE
+   ========================================================= */
+function showRecap(mode){
+  const diff = document.querySelector('input[name="difficulty"]:checked');
+  const sec = diff ? +diff.value : 20;
+  const diffLabel = sec === 25 ? 'Lehká' : sec === 15 ? 'Těžká' : 'Střední';
+  const modeLabel = mode === 'vs' ? 'Hra proti počítači' : 'Trénink (sám)';
+  $('recap-sub').textContent = modeLabel + ' · ' + diffLabel + ' (' + sec + ' s)';
+  $('recap-ans').textContent = sec + ' s na otázku (' + diffLabel.toLowerCase() + ' obtížnost)';
+  $('recap-vs-li').hidden = (mode !== 'vs');
+  $('recap-sel').textContent = mode === 'vs'
+    ? '12 s na výběr volného pole — jinak tah přejde na počítače.'
+    : 'Bez časového limitu — vyberte pole klidným tempem.';
+  $('recap-overlay').dataset.mode = mode;
+
+  // Reset animací
+  const items = $$('.recap-list li');
+  items.forEach(li => li.classList.remove('visible'));
+  const actions = document.querySelector('.recap-actions');
+  actions.classList.remove('visible');
+
+  $('recap-overlay').hidden = false;
+
+  // Staggered entry — každý bod za 120 ms
+  items.forEach((li, i) => {
+    if(li.hidden) return;
+    setTimeout(() => li.classList.add('visible'), 300 + i * 480);
+  });
+  const visibleCount = items.filter(li => !li.hidden).length;
+  setTimeout(() => {
+    actions.classList.add('visible');
+    $('recap-start').focus();
+  }, 300 + visibleCount * 480 + 200);
+}
+
+function startGame(mode){
+  state.gameMode = mode;
+  const diff = document.querySelector('input[name="difficulty"]:checked');
+  state.timeLimit = diff ? +diff.value : 20;
+  state.isDemo = $('demo-toggle').checked;
+  state.hexes = {};
+  state.hexCats = buildHexCategories();  // ← PŘIŘAZENÍ KATEGORIÍ POLÍM
+  state.score = 0;
+  state.stats = {correct:0, helped:0, wrong:0};
+  state.usedQuestions = [];
+  state.currentPlayer = 'player';
+  state.finalProgress = 0; state.finalWins = 0;
+  state.activeHexId = null; state.activeQuestion = null; state.activeCategory = null;
+  state.helpUsedOnCurrent = false; state.isStealAttempt = false;
+  state.correctionUsed = false;
+  state.cpuFailStreak = 0;
+  state.raceMode = false;
+  showRaceBanner(false);
+  initPyramid(); updatePanel(); updateStatus();
+  switchView('game');
+  setPanelTimerIdle();
+  if(mode === 'vs') startSelectionTimer();
+  saveState();
+}
+
+function continueGame(){
+  const r = loadState(); if(!r) return;
+  state = r;
+  if(!state.hexCats || Object.keys(state.hexCats).length === 0){
+    state.hexCats = buildHexCategories();
+  }
+  if(state.currentPhase === 'final'){
+    switchView('final');
+    // Pokud finále už běží (≥1 otázka zodpovězena), pokračujeme;
+    // jinak ukážeme celebration.
+    if(state.finalProgress > 0){
+      $('final-celebrate').hidden = true;
+      $('final-running').hidden = false;
+      renderFinalDots();
+      setTimeout(loadFinal, 400);
+    } else {
+      startFinal();
+    }
+    return;
+  }
+  initPyramid(); updatePanel(); updateStatus(); switchView('game');
+  setPanelTimerIdle();
+  if(state.gameMode === 'vs' && state.currentPlayer === 'player') startSelectionTimer();
+}
+
+function checkContinue(){
+  const r = loadState();
+  const row = $('continue-row');
+  if(r && r.currentPhase && r.currentPhase !== 'intro' && r.currentPhase !== 'result') row.classList.add('show');
+  else row.classList.remove('show');
+}
+
+/* =========================================================
+   EVENTS
+   ========================================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  checkContinue();
+  $$('.mode-btn').forEach(b => b.addEventListener('click', () => showRecap(b.dataset.mode)));
+  $('recap-back').addEventListener('click', () => { $('recap-overlay').hidden = true; });
+  $('recap-start').addEventListener('click', () => {
+    const mode = $('recap-overlay').dataset.mode;
+    $('recap-overlay').hidden = true;
+    startGame(mode);
+  });
+  $('btn-continue').addEventListener('click', continueGame);
+  $('btn-discard').addEventListener('click', () => { clearStorage(); checkContinue(); });
+  $('btn-restart').addEventListener('click', () => { if(confirm('Opravdu restartovat hru?')){ clearStorage(); switchView('intro'); checkContinue(); } });
+  $('btn-back').addEventListener('click', () => { if(confirm('Opustit hru? Postup se uloží.')) switchView('intro'); });
+  $('btn-play-again').addEventListener('click', () => startGame(state.gameMode || 'solo'));
+  $('btn-home').addEventListener('click', () => { clearStorage(); switchView('intro'); checkContinue(); });
+
+  $('btn-submit').addEventListener('click', () => {
+    const v = $('q-input').value;
+    if(state.currentPhase === 'final') processFinalAnswer(v);
+    else processAnswer(v, false);
+  });
+  $('btn-cancel').addEventListener('click', () => {
+    if(!confirm('Zrušit otázku? Bude počítáno jako chyba.')) return;
+    if(state.currentPhase === 'final') handleFinalTimeout();
+    else handleModalTimeout();
+  });
+  $('btn-help').addEventListener('click', activateHelp);
+  $('btn-start-final').addEventListener('click', beginFinalQuestions);
+
+  $('q-input').addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); $('btn-submit').click(); } });
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape' && $('backdrop').classList.contains('open')) $('btn-cancel').click();
+  });
+});
+</script>
+</body>
+</html>
+
+<!--
+================================================================
+FLEXI Kvíz — poznámky pro úpravy
+================================================================
+
+1) Kategorie → pole:
+   Funkce buildHexCategories() vytvoří shuffled mapování ID pole → kategorie
+   (distribuce S 6, I 6, VO 6, TN 5, PN 5 = 28). Volá se v startGame()
+   a ukládá do state.hexCats. Pole je v hex zobrazeno jako .cat (velký
+   text) + .num (malé číslo v rohu).
+
+2) Výběr otázky podle kategorie pole:
+   Funkce openModal(hexId) přečte state.hexCats[hexId] a předá ji funkci
+   getQuestion(category), která filtruje QUESTION_BANK na danou kategorii.
+   Pole tedy vždy nabízí otázku odpovídající své kategorie. Modal zobrazí
+   tu samou kategorii v #m-cat.
+
+3) iPad layout:
+   Hlavní layout .game v CSS používá grid-template-columns: 280px 1fr.
+   Media queries dole:
+     - >=1180px → větší hexagony 96px (iPad Pro 13")
+     - 1024–1179px → 84px (iPad Pro 11")
+     - <=1023px → panel padá nad pyramidu jako řádek (portrait)
+     - <=720px → kompaktní telefonní fallback
+   Pyramida ladí přes proměnnou --hex.
+
+4) Velikost modalu:
+   .modal { max-width: 720px } — optimální pro iPad landscape.
+   .modal-body padding, .q-input min-height 52px = velké tap targety.
+   V media query (<=720px) max-width: 100% pro telefony.
+
+5) Hexagony:
+   .hex se ladí v sekci "PYRAMIDA". Klíčová proměnná --hex, padding
+   přes clip-path::before, stavy .player/.player-help/.system/.system-locked
+   mění barvu pozadí. Hover je minimální (translateY 1px + brightness).
+   Obsah pole: <span class="cat">S</span><span class="num">12</span>.
+
+================================================================
+-->
+
+  --danger:#D14B36;
+  --warning:#C98A18;
+
+  --r-sm:6px;
+  --r-md:10px;
+  --r-lg:14px;
+  --shadow-sm:0 1px 2px rgba(20,32,52,.05);
+  --shadow-md:0 4px 14px rgba(20,32,52,.08);
+
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:20px; --s6:24px; --s7:32px; --s8:40px;
+
+  --fs-xs:12px; --fs-sm:13px; --fs-md:14px; --fs-base:15px; --fs-lg:17px; --fs-xl:20px; --fs-2xl:26px; --fs-3xl:32px;
+
+  --t:160ms ease;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,system-ui,sans-serif;
+  font-size:var(--fs-base);
+  color:var(--text);
+  background:var(--bg);
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+}
+h1,h2,h3,h4{margin:0;font-weight:600;letter-spacing:-0.01em;color:var(--text)}
+h1{font-size:var(--fs-3xl);font-weight:700;letter-spacing:-0.02em}
+h2{font-size:var(--fs-2xl)}
+h3{font-size:var(--fs-lg)}
+p{margin:0;color:var(--text-2)}
+button,input{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus{outline:none}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+
+.vh{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* Atribut hidden musí přebít flex/grid display z .help-list apod. */
+[hidden]{display:none!important}
+
+/* =========================================================
+   TOPBAR
+   ========================================================= */
+.topbar{
+  position:sticky;top:0;z-index:30;
+  background:var(--surface);
+  border-bottom:1px solid var(--border);
+}
+.topbar-in{
+  max-width:1400px;margin:0 auto;
+  padding:var(--s3) var(--s6);
+  display:flex;align-items:center;gap:var(--s4);
+}
+.brand{display:inline-flex;align-items:center;gap:var(--s3);font-weight:700;color:var(--text)}
+.brand-mark{
+  width:30px;height:30px;border-radius:7px;
+  background:var(--blue);color:#fff;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:13px;
+}
+.brand-sub{color:var(--text-3);font-weight:400;font-size:var(--fs-sm)}
+.topbar-meta{margin-left:auto;color:var(--text-3);font-size:var(--fs-sm)}
+
+.shell{max-width:1400px;margin:0 auto;padding:var(--s6)}
+
+.screen{display:none}
+.screen.active{display:block}
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  padding:11px 18px;
+  border:1px solid transparent;
+  border-radius:var(--r-md);
+  font-weight:600;font-size:var(--fs-md);
+  background:var(--surface);color:var(--text);
+  transition:background var(--t),border-color var(--t),color var(--t);
+  min-height:44px;
+}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--blue);color:#fff}
+.btn-primary:hover{background:var(--blue-600)}
+.btn-ghost{background:transparent;color:var(--blue);border-color:var(--border-strong)}
+.btn-ghost:hover{background:var(--blue-50);border-color:var(--blue)}
+.btn-subtle{background:var(--surface-alt);border-color:var(--border)}
+.btn-subtle:hover{background:#fff;border-color:var(--border-strong)}
+.btn-danger{background:transparent;color:var(--danger);border-color:var(--border-strong)}
+.btn-danger:hover{background:#FDECE7;border-color:var(--danger)}
+.btn-lg{padding:14px 22px;font-size:var(--fs-lg);min-height:52px}
+.btn-sm{padding:8px 12px;font-size:var(--fs-sm);min-height:36px}
+
+/* =========================================================
+   INTRO (zjednodušený, žádné hero karty)
+   ========================================================= */
+.intro{max-width:880px;margin:0 auto;padding:var(--s7) 0 var(--s6)}
+.intro h1{margin-bottom:var(--s3)}
+.intro .lead{color:var(--text-2);font-size:var(--fs-lg);max-width:62ch;margin-bottom:var(--s7)}
+
+.intro-section{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:var(--s6);
+  margin-bottom:var(--s5);
+}
+.intro-section h3{margin-bottom:var(--s4);font-size:var(--fs-md);text-transform:uppercase;letter-spacing:.06em;color:var(--text-3)}
+
+.mode-row{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4);align-items:start}
+.mode-btn{
+  display:flex;flex-direction:column;align-items:flex-start;gap:6px;
+  padding:var(--s5);
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:var(--r-md);
+  text-align:left;
+  transition:border-color var(--t),background var(--t);
+}
+.mode-btn:hover{border-color:var(--blue);background:var(--blue-50)}
+.mode-btn strong{font-size:var(--fs-lg);color:var(--text)}
+.mode-btn span{font-size:var(--fs-sm);color:var(--text-2)}
+/* Primární volba — vs */
+.mode-btn.primary{
+  border-color:var(--blue);
+  background:var(--blue-50);
+  padding:var(--s6) var(--s5);
+}
+.mode-btn.primary strong{font-size:var(--fs-xl);color:var(--blue)}
+.mode-btn.primary:hover{background:#d6e8fd}
+/* Sekundární volba — solo */
+.mode-btn.secondary{
+  opacity:.8;
+  padding:var(--s4) var(--s5);
+}
+.mode-btn.secondary strong{font-size:var(--fs-md);color:var(--text-2)}
+.mode-btn.secondary:hover{opacity:1}
+
+.diff-row{display:flex;gap:var(--s2);flex-wrap:wrap}
+.diff-opt{
+  flex:1;min-width:120px;
+  display:flex;flex-direction:column;align-items:flex-start;gap:2px;
+  padding:var(--s3) var(--s4);
+  border:1.5px solid var(--border);
+  border-radius:var(--r-md);
+  background:var(--surface);
+  cursor:pointer;
+  transition:border-color var(--t),background var(--t);
+}
+.diff-opt:hover{border-color:var(--blue)}
+.diff-opt input{position:absolute;opacity:0;pointer-events:none}
+.diff-opt strong{font-size:var(--fs-md)}
+.diff-opt span{font-size:var(--fs-sm);color:var(--text-3)}
+.diff-opt:has(input:checked){border-color:var(--blue);background:var(--blue-50)}
+.diff-opt:has(input:checked) strong{color:var(--blue-600)}
+
+.toggle{display:inline-flex;align-items:center;gap:8px;font-size:var(--fs-sm);color:var(--text-2);cursor:pointer}
+.toggle input{accent-color:var(--blue);width:16px;height:16px}
+
+.continue-row{
+  display:none;align-items:center;gap:var(--s4);
+  padding:var(--s4) var(--s5);
+  background:var(--blue-50);
+  border:1px solid var(--blue);
+  border-radius:var(--r-md);
+  margin-bottom:var(--s5);
+}
+.continue-row.show{display:flex}
+.continue-row p{flex:1;color:var(--text);font-size:var(--fs-md)}
+
+
+/* =========================================================
+   GAME LAYOUT — iPad landscape priorita
+   Levý panel 280px na iPadu, pravý dominantní pyramida.
+   Ladí se ZDE a v media queries dole.
+   ========================================================= */
+.game{
+  display:grid;
+  grid-template-columns:280px 1fr;
+  gap:var(--s5);
+  align-items:start;
+}
+.panel{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:var(--s5);
+  display:flex;flex-direction:column;gap:var(--s5);
+  position:sticky;top:64px;
+}
+.panel-row{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s2)}
+.panel-row .k{font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.06em;color:var(--text-3)}
+.panel-row .v{font-weight:600;color:var(--text);font-variant-numeric:tabular-nums}
+.panel-row.turn-timer .v{font-size:var(--fs-xl);color:var(--blue);font-weight:700}
+.panel-row.turn-timer.warn .v{color:var(--orange)}
+.panel-row.turn-timer.danger .v{color:var(--danger)}
+.turn-timer-track{height:4px;background:#EEF2F7;border-radius:2px;overflow:hidden;margin-top:-4px}
+.turn-timer-bar{height:100%;width:0%;background:var(--blue);transition:width .25s linear}
+.panel-row.turn-timer.warn ~ .turn-timer-track .turn-timer-bar,
+.turn-timer-bar.warn{background:var(--orange)}
+.turn-timer-bar.danger{background:var(--danger)}
+.panel hr{border:0;border-top:1px solid var(--border);margin:0}
+.panel-title{font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);margin-bottom:8px}
+
+.score-large{
+  display:flex;align-items:baseline;justify-content:space-between;
+}
+.score-large .num{font-size:var(--fs-3xl);font-weight:700;color:var(--blue-600);font-variant-numeric:tabular-nums;line-height:1}
+.score-large .lbl{font-size:var(--fs-sm);color:var(--text-3)}
+
+.mini-stats{display:grid;grid-template-columns:1fr 1fr;gap:var(--s2)}
+.mini-stats .cell{
+  padding:var(--s2) var(--s3);
+  background:var(--surface-alt);
+  border:1px solid var(--border);
+  border-radius:var(--r-sm);
+  text-align:center;
+}
+.mini-stats .num{font-size:var(--fs-lg);font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.mini-stats .lbl{font-size:11px;color:var(--text-3);text-transform:uppercase;letter-spacing:.05em;margin-top:2px}
+
+.sides{display:flex;flex-direction:column;gap:6px}
+.side{
+  display:flex;align-items:center;gap:8px;
+  font-size:var(--fs-sm);color:var(--text-2);
+}
+.side .dot{width:8px;height:8px;border-radius:50%;background:var(--border-strong);flex-shrink:0}
+.side.done{color:var(--green);font-weight:600}
+.side.done .dot{background:var(--green)}
+
+.legend-mini{
+  display:flex;flex-wrap:wrap;gap:6px;
+  font-size:11px;
+}
+.legend-mini span{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 8px;border-radius:999px;
+  background:var(--surface-alt);border:1px solid var(--border);
+  color:var(--text-2);
+}
+.legend-mini i{
+  width:8px;height:8px;border-radius:2px;display:inline-block;
+  background:var(--blue);
+}
+.legend-mini i.S{background:#2870ED}
+.legend-mini i.I{background:#02A3A4}
+.legend-mini i.VO{background:#34536F}
+.legend-mini i.TN{background:#6E7AD9}
+.legend-mini i.PN{background:#0CB43F}
+
+.panel-actions{display:flex;gap:8px}
+.panel-actions .btn{flex:1}
+
+/* =========================================================
+   BOARD
+   ========================================================= */
+.board-wrap{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r-lg);
+  padding:var(--s6) var(--s4);
+}
+.status-strip{
+  display:flex;align-items:center;gap:var(--s3);
+  margin-bottom:var(--s5);
+  padding:var(--s3) var(--s4);
+  background:var(--surface-alt);
+  border:1px solid var(--border);
+  border-radius:var(--r-md);
+  font-size:var(--fs-md);
+  min-height:48px;
+}
+.status-strip .who{font-weight:600}
+.status-strip .what{color:var(--text-2)}
+.status-strip.system{border-left:3px solid var(--orange)}
+.status-strip.player{border-left:3px solid var(--blue)}
+.status-strip.win{border-left:3px solid var(--green);color:var(--green);font-weight:600}
+
 /* =========================================================
    POČÍTAČ — bublina s přímou řečí
    ========================================================= */
