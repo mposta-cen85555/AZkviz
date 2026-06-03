@@ -1045,8 +1045,8 @@ const CONFIG = {
   pointsHelp: 1,
   finalQuestionCount: 5,
   finalRequiredWins: 3,
-  systemAccuracy: 0.82,
-  systemIrrationalRate: 0.08,
+  systemAccuracy: 0.75,
+  systemIrrationalRate: 0.05,
   selectionTimeout: 12
 };
 
@@ -1325,57 +1325,59 @@ function updateStatus(){
    POČÍTAČ — bublina
    ========================================================= */
 const CPU_PICK = [
-  'Beru si pole #{id}. Hezky doprostřed.',
-  'Pole #{id} je strategické — to mi pomůže.',
-  'Chceš mě odříznout? Tak fajn, jdu na #{id}.',
-  'Pole #{id} — tudy povede moje cesta.',
-  'Tahám #{id}, ať máš o čem přemýšlet.',
-  'Hm, #{id} mi blokuje propojení. Beru.'
+  'Tak já si vemu pole #{id}, jo?',
+  'Pole #{id}. V suchým triku.',
+  'Klídek, pole #{id} dám.',
+  'Pole #{id} — to mám v malíčku.',
+  'No #{id}, proč ne.',
+  '#{id}? Pohodička.'
 ];
 const CPU_QUESTION = [
-  'Kategorie {cat} — to zvládnu.',
-  'Hmm, {cat}. Tu znám.',
-  'Otázka z {cat}, vidím to jasně.',
-  '{cat}? Pohoda.',
-  'Tak, {cat} — soustředím se.',
-  'Dostal jsem {cat}. Premýšlím…'
+  'Kategorie {cat}? Na to jsem zrovna odborník.',
+  'A je tu {cat}. Si pamatuju z elearningu.',
+  'Hm, {cat} — trochu zapřemýšlim, určitě to bylo někde v Amosu.',
+  '{cat}? To přece dělám denně.',
+  '{cat} — pamatuju si to z poslední porady.',
+  'Tak {cat}. Mrknu do paměti.'
 ];
 const CPU_SUCCESS = [
-  'Mám to! O jedno blíž k vítězství.',
-  'Hotovo. Tohle pole je moje.',
-  'Trefa. Tvoje cesta se trochu zúžila.',
-  'Plus jedno. Pokračujeme.',
-  'Snadná. Jdeš na řadu.'
+  'Jak říkám, jsem profesionál.',
+  'Solidně jsem si to povodil.',
+  'Nechceš to skrečovat rovnou :) ?',
+  'No prosím, vyšlo to.',
+  'Hraček. Další.',
+  'Vidíš? Trénink se vyplácí.'
 ];
 const CPU_FAIL = [
-  'Sakra, vedle. Tvoje šance.',
-  'Hmm, to mi uniklo. Příště.',
-  'Tipl jsem si špatně — využij toho.',
-  'Tak to nevyšlo. Pole je zablokované.',
-  'Špatně. Smůla pro mě.'
+  'Se stane.',
+  'Kdo ty otázky vymýšlel. To je kampaň!',
+  'Když se to probíralo, byl jsem asi nemocnej.',
+  'No nazdar, to mi vypadlo.',
+  'Eh, tohle mi uteklo.',
+  'Tak to si zapíšu na příště.'
 ];
 const CPU_PLAYER_WRONG = [
-  'Ha! To se ti nepovedlo.',
-  'Vidíš? Není to tak snadné.',
-  'Tvoje chyba — moje radost.',
-  'Tohle pole už nikomu nepatří.'
+  'Taky to neumíš všecko, koukám!',
+  'Já to říkal, moje chvíle přijde.',
+  'No vidíš.',
+  'To si zapamatuju, kámo.'
 ];
 const CPU_PLAYER_TIMEOUT = [
-  'Čas je nepřítel. Příště rychleji.',
-  'Pozdě, pozdě!',
-  'Hodiny tikají i pro tebe.'
+  'Pomalu, pomalu… moc pomalu.',
+  'Zaspal jsi, kamaráde.',
+  'Hodiny ti utíkaj.'
 ];
 const CPU_PLAYER_CORRECT = [
-  'Dobrá odpověď. Ale ještě nejsi v cíli.',
-  'Hezky. Uvidíme, jak dlouho ti to vydrží.',
-  'Trefa. Já se nedám.',
-  'Bod pro tebe. Hra pokračuje.'
+  'No dobrý. Ale neuspávej se.',
+  'Hm, slušný. Já tě pořád dohoním.',
+  'Trefa. Tak na to budu muset zatlačit.',
+  'Bod pro tebe. Beru to sportovně.'
 ];
 const CPU_PLAYER_WIN = [
-  'Klobouk dolů, dobrá hra!',
-  'Gratuluji, vyhrál(a) jsi zaslouženě.',
-  'To bylo dobré. Příště to vrátím.',
-  'Hezky odehráno. Gratuluji!'
+  'Klobouk dolů, evidentně hraješ jinou ligu.',
+  'Musím smeknout, dobrá práce.',
+  'Tak jo, dnes ti to fakt šlo. Gratuluju.',
+  'Uznávám porážku. Příště si to rozdáme znovu.'
 ];
 function pickPhrase(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 let _cpuTypeTimer = null;
@@ -1766,8 +1768,10 @@ function systemTurn(){
     // 2) Otázka
     cpuSay(pickPhrase(CPU_QUESTION).replace('{cat}', CAT_NAMES[cat]), () => {
       if(state.currentPhase !== 'game'){ if(targetBtn) targetBtn.classList.remove('targeted'); return; }
-      // 3) Výsledek
-      const ok = Math.random() < CONFIG.systemAccuracy;
+      // 3) Výsledek — pity rule: max 2 chyby v řadě
+      let ok = Math.random() < CONFIG.systemAccuracy;
+      if(!ok && (state.cpuFailStreak||0) >= 2) ok = true;
+      state.cpuFailStreak = ok ? 0 : ((state.cpuFailStreak||0) + 1);
       if(targetBtn) targetBtn.classList.remove('targeted');
       if(ok) updateHex(target, 'system');
       else   updateHex(target, 'system-locked');
@@ -2007,6 +2011,7 @@ function startGame(mode){
   state.activeHexId = null; state.activeQuestion = null; state.activeCategory = null;
   state.helpUsedOnCurrent = false; state.isStealAttempt = false;
   state.correctionUsed = false;
+  state.cpuFailStreak = 0;
   initPyramid(); updatePanel(); updateStatus();
   switchView('game');
   setPanelTimerIdle();
@@ -2126,4 +2131,3 @@ FLEXI Kvíz — poznámky pro úpravy
 
 ================================================================
 -->
-
